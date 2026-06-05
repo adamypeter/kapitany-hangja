@@ -847,7 +847,8 @@ async function loadLB() {
         headers.forEach((h,i) => o[h] = vals[i]||'');
         return o;
       });
-      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseInt(r['Összesen']||r['osszesen']||'0')||0 })).filter(p => p.name);
+      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseInt(r['Összesen']||r['osszesen']||'0')||0 }))
+        .filter(p => p.name && p.name.length < 50 && !p.name.includes('ℹ') && !p.name.includes('pontos') && !p.name.includes('oszlop'));
     } catch(e) { players = DEMO_SCORES; }
   } else { players = DEMO_SCORES; }
 
