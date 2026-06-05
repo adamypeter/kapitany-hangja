@@ -655,7 +655,7 @@ footer {
       <h2>A játék menete</h2>
       <p>A program <strong>30 napon keresztül</strong> teszi próbára a résztvevőket. Minden nap egy rögzített hangüzenet alapján <strong>vakon</strong> kell azonosítani a pontos hajós utasítást és a hozzá kapcsolódó teendőket. A verseny izgalmait <strong>dupla pontos fordulók</strong> fokozzák.</p>
       <h2>A válasz formátuma</h2>
-      <p>A kérdésekre adott válasznak <strong>hangüzenet formájában</strong> kell érkeznie a Messenger csoportba. A hangfelvétel <strong>maximum 30 másodperc</strong> lehet. A válaszban pontosan le kell írni hangban:</p>
+      <p>A kérdésekre adott válasznak <strong>hangüzenet formájában</strong> kell érkeznie a Messengeren <strong>Adámy Péternek</strong>. A hangfelvétel <strong>maximum 30 másodperc</strong> lehet. A válaszban pontosan le kell írni hangban:</p>
       <ul>
         <li>Mit jelent a kapitány utasítása</li>
         <li><strong>Hova megyek a hajón</strong> — melyik részen, mi felé</li>
@@ -671,7 +671,7 @@ footer {
       </ul>
       <h2>A tét</h2>
       <p>A leggyengébben teljesítő játékos nyeri el a <strong>„hajó szobalánya"</strong> címet, ami a 2026-os szezonban teljes körű ki- és beágyazási kötelezettséggel jár a fedélzeten.</p>
-      <div class="tipp-row">💬 Tippjeidet a Messenger csoportban add le — ott zajlik a vita, a buli, az ugratás. Ez az oldal a tabellát és az archívumot mutatja.</div>
+      <div class="tipp-row">🎤 Tippjeidet <strong>Adámy Péternek</strong> add le Messengeren! Majd az eredmény után küldd be a csoportba — egy igazi roast show-ra!</div>
     </div>
   </section>
 
@@ -847,7 +847,7 @@ async function loadLB() {
         headers.forEach((h,i) => o[h] = vals[i]||'');
         return o;
       });
-      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseInt(r['Összesen']||r['osszesen']||'0')||0 }))
+      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseFloat((r['Összesen']||r['osszesen']||'0').replace(',','.')) || 0 }))
         .filter(p => p.name && p.name.length < 50 && !p.name.includes('ℹ') && !p.name.includes('pontos') && !p.name.includes('oszlop'));
     } catch(e) { players = DEMO_SCORES; }
   } else { players = DEMO_SCORES; }
@@ -856,14 +856,31 @@ async function loadLB() {
   const allZero = players.every(p => p.score === 0);
   const minScore = players.length ? players[players.length-1].score : 0;
 
+  // Holtverseny kezelése: azonos pontszám → azonos helyezés
+  let rankDisplay = 1;
+  const ranks = players.map((p, i) => {
+    if (i > 0 && p.score === players[i-1].score) {
+      return null; // holtverseny — előző rangot kapja
+    }
+    const r = rankDisplay;
+    rankDisplay = i + 2;
+    return r;
+  });
+  // visszatöltés: null-ok kapják az előző értéket
+  let lastRank = 1;
+  const finalRanks = ranks.map(r => { if (r !== null) lastRank = r; return lastRank; });
+
   let html = '<table class="lb-table"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th></tr></thead><tbody>';
   players.forEach((p,i) => {
-    const cls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
-    const sym = i===0?'⚓':i===1?'2':i===2?'3':(i+1);
-    const isLast = !allZero && p.score===minScore && i===players.length-1;
+    const rank = finalRanks[i];
+    const isTied = players.filter(x => x.score === p.score).length > 1;
+    const cls = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'';
+    const sym = rank===1 ? (isTied ? '⚓' : '⚓') : rank;
+    const isLast = !allZero && p.score===minScore;
+    const isLastUnique = isLast && players.filter(x => x.score === minScore).length === players.length - players.filter(x => x.score > minScore).length;
     html += `<tr class="${cls}">
       <td class="rank-num">${sym}</td>
-      <td class="player-nm">${p.name}${isLast?'<span class="szobalanya">⚠ Szobalánya jelölt</span>':''}</td>
+      <td class="player-nm">${p.name}${isLast && !allZero?'<span class="szobalanya">⚠ Szobalány jelölt</span>':''}</td>
       <td class="score-val">${p.score}</td>
     </tr>`;
   });
