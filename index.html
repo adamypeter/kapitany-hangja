@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Kapitány Hangja — 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Lato:wght@300;400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lake:    #1e8abf;
+  --lake-d:  #0f5f8a;
+  --lake-l:  #4db8e8;
+  --sky:     #c8e8f5;
+  --sky2:    #a0d4ee;
+  --sand:    #e8d5a3;
+  --sand-d:  #c8aa6a;
+  --wine:    #0d3d5c;
+  --wine-l:  #1a6080;
+  --cream:   #fdf8ef;
+  --ink:     #0a1e2d;
+  --chalk:   #f0ede4;
+  --green:   #4a7c59;
+  --green-l: #6aaa7a;
+  --amber:   #d4820a;
+  --navy:    #0d2b3e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Lato', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══ HERO HEADER ═══ */
+header {
+  position: relative;
+  background: var(--navy);
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+/* Lake scene — CSS only */
+.sky-layer {
+  height: 200px;
+  position: relative;
+  background: linear-gradient(180deg,
+    #a8d8f0 0%,
+    #c8e8f8 30%,
+    #dff2fa 50%,
+    #1e8abf 50%,
+    #0f6a9a 70%,
+    #0a4d72 100%);
+}
+
+/* Horizon shimmer line */
+.sky-layer::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(255,255,255,0.6) 30%,
+    rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.6) 70%, transparent 100%);
+  margin-top: -1px;
+}
+
+/* Water ripple lines */
+.sky-layer::after {
+  content: '';
+  position: absolute;
+  top: 58%; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent 0px, transparent 11px,
+      rgba(255,255,255,0.07) 11px, rgba(255,255,255,0.07) 13px);
+}
+
+/* Sun */
+.sun {
+  position: absolute;
+  top: 16px;
+  right: 14%;
+  width: 46px;
+  height: 46px;
+  background: radial-gradient(circle, #fff8d0 50%, #ffe566 80%, rgba(255,220,0,0) 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px 14px rgba(255,230,50,0.25);
+}
+
+/* Sailboats */
+.boats {
+  position: absolute;
+  top: 50%;
+  margin-top: -48px;
+  left: 0; right: 0;
+}
+
+/* Water surface bottom strip */
+.water-surface {
+  background: linear-gradient(180deg, #0a4d72 0%, #07364f 100%);
+  height: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.water-surface::after {
+  content: '';
+  position: absolute;
+  top: 8px; left: 0; right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg,
+    transparent 0px, transparent 20px,
+    rgba(255,255,255,0.12) 20px, rgba(255,255,255,0.12) 40px);
+}
+
+/* Title bar */
+.title-bar {
+  background: var(--navy);
+  padding: 1rem 1.5rem 1.2rem;
+  text-align: center;
+  position: relative;
+  border-bottom: 4px solid var(--lake);
+}
+
+.title-bar::before, .title-bar::after {
+  content: '⚓';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+  opacity: 0.5;
+}
+.title-bar::before { left: 1.5rem; }
+.title-bar::after  { right: 1.5rem; }
+
+.site-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 7vw, 3.8rem);
+  font-weight: 900;
+  color: var(--sand);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+
+.site-subtitle {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: 0.82rem;
+  letter-spacing: 0.25em;
+  color: rgba(232,213,163,0.75);
+  margin-top: 0.35rem;
+  text-transform: uppercase;
+}
+
+.season-pill {
+  display: inline-block;
+  background: var(--sand-d);
+  color: var(--wine);
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  padding: 0.2rem 0.9rem;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+/* ═══ NAV ═══ */
+nav {
+  background: var(--navy);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-bottom: 3px solid var(--lake);
+}
+
+nav a {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(200,230,248,0.65);
+  text-decoration: none;
+  padding: 0.9rem 1.2rem;
+  border-right: 1px solid rgba(30,138,191,0.2);
+  transition: background 0.2s, color 0.2s;
+}
+nav a:first-child { border-left: 1px solid rgba(30,138,191,0.2); }
+nav a:hover, nav a.active {
+  background: rgba(30,138,191,0.15);
+  color: #c8e8f8;
+}
+
+/* ═══ MAIN ═══ */
+main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Section heading */
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--sand-d);
+}
+.sec-head h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--wine);
+}
+
+/* ═══ LEADERBOARD ═══ */
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.lb-table th {
+  background: var(--lake-d);
+  color: white;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+.lb-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+.lb-table tr:hover td { background: #f8f4ec; }
+.lb-table tr:last-child td { border-bottom: none; }
+
+.rank-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: #ccc;
+  text-align: center;
+  width: 3rem;
+}
+.rank-1 .rank-num { color: #d4a017; font-size: 1.5rem; }
+.rank-2 .rank-num { color: #9e9e9e; }
+.rank-3 .rank-num { color: #b87333; }
+
+.player-nm {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.rank-1 .player-nm { color: var(--lake-d); }
+
+.score-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--wine);
+  text-align: right;
+}
+
+.szobalanya {
+  font-size: 0.68rem;
+  color: var(--wine-l);
+  font-weight: 400;
+  display: block;
+  font-family: 'Lato', sans-serif;
+  margin-top: 0.1rem;
+}
+
+.lb-note {
+  text-align: right;
+  font-size: 0.72rem;
+  color: #aaa;
+  margin-top: 0.75rem;
+  font-style: italic;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* ═══ DAILY QUESTION ═══ */
+.q-card {
+  background: white;
+  border: 1px solid #e8dfc8;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.q-card-top {
+  background: var(--lake);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.q-day-info {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+}
+
+.double-badge {
+  background: var(--wine);
+  color: var(--sand);
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  padding: 0.2rem 0.7rem;
+  text-transform: uppercase;
+}
+
+.q-card-body { padding: 1.75rem 1.5rem; }
+
+.q-number-bg {
+  font-family: 'Playfair Display', serif;
+  font-size: 6rem;
+  font-weight: 900;
+  color: #f0ede4;
+  float: right;
+  line-height: 1;
+  margin: -0.5rem -0.5rem 0 1rem;
+}
+
+.q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+/* Audio */
+.audio-wrap {
+  border-top: 1px dashed #d8ceb0;
+  padding-top: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.audio-label {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lake-d);
+  margin-bottom: 0.75rem;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: #f8f4ec;
+  padding: 0.6rem 1rem;
+  border-radius: 2px;
+}
+
+.play-btn {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--lake);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.1s;
+}
+.play-btn:hover { background: var(--lake-d); transform: scale(1.05); }
+
+.wave-bars {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 36px;
+  overflow: hidden;
+}
+.wbar {
+  width: 3px;
+  background: #ccc;
+  border-radius: 2px;
+  transition: background 0.1s;
+}
+.wbar.done { background: var(--lake); }
+
+.audio-time {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  color: #888;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.q-hint {
+  margin-top: 1.25rem;
+  font-size: 0.83rem;
+  color: #888;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+.empty-state p {
+  color: #aaa;
+  font-style: italic;
+  line-height: 1.7;
+}
+
+/* ═══ ARCHIVE ═══ */
+.arch-item {
+  border: 1px solid #e0d8c0;
+  margin-bottom: 0.6rem;
+  background: white;
+}
+.arch-hd {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.75rem 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.arch-hd:hover { background: #faf6ee; }
+.arch-day {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--wine);
+  min-width: 3.5rem;
+}
+.arch-q-preview {
+  flex: 1;
+  font-size: 0.88rem;
+  color: #666;
+}
+.arch-chev {
+  color: var(--sand-d);
+  transition: transform 0.2s;
+  font-size: 0.75rem;
+}
+.arch-item.open .arch-chev { transform: rotate(90deg); }
+
+.arch-body {
+  display: none;
+  padding: 0.9rem 1.1rem 1.1rem;
+  border-top: 1px solid #ede5cc;
+  background: #fdf9f2;
+}
+.arch-item.open .arch-body { display: block; }
+
+.arch-label {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lake-d);
+  margin-bottom: 0.3rem;
+}
+.arch-val {
+  font-size: 0.95rem;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+/* ═══ RULES ═══ */
+.rules-card {
+  background: white;
+  border: 1px solid #e0d8c0;
+  padding: 2rem 2rem 2.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.rules-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--wine);
+  margin-bottom: 0.25rem;
+}
+.rules-dateline {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-bottom: 1.25rem;
+  font-style: italic;
+}
+.rules-card h2 {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lake-d);
+  margin: 1.5rem 0 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #e8dfc8;
+}
+.rules-card p, .rules-card li {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #333;
+}
+.rules-card ul { padding-left: 1.5rem; margin-top: 0.25rem; }
+.rules-card strong { color: var(--ink); }
+
+.tipp-row {
+  background: #fdf3e7;
+  border-left: 3px solid var(--amber);
+  padding: 0.75rem 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: #555;
+}
+
+/* ═══ FOOTER ═══ */
+footer {
+  background: var(--ink);
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  color: rgba(232,213,163,0.35);
+  letter-spacing: 0.1em;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 580px) {
+  nav a { font-size: 0.68rem; padding: 0.7rem 0.7rem; letter-spacing: 0.08em; }
+  .rules-card { padding: 1rem; }
+  .q-card-body { padding: 1rem; }
+  .q-number-bg { font-size: 3.5rem; }
+  main { padding: 1rem 1rem 4rem; }
+  .title-bar { padding: 0.75rem 1rem 1rem; }
+  .title-bar::before, .title-bar::after { display: none; }
+}
+@media (max-width: 400px) {
+  nav { justify-content: flex-start; }
+  nav a { font-size: 0.64rem; padding: 0.65rem 0.6rem; flex: 1 1 auto; text-align: center; border-right: none; border-left: none; border-bottom: 1px solid rgba(30,138,191,0.15); }
+  .lb-table td, .lb-table th { padding: 0.6rem 0.5rem; }
+  .player-nm { font-size: 0.88rem; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .score-val { font-size: 1.2rem; }
+  .site-title { font-size: clamp(1.6rem, 8vw, 2.6rem); }
+  .sky-layer { height: 160px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="sky-layer">
+    <div class="sun"></div>
+
+    <!-- Sailboats -->
+    <svg class="boats" viewBox="0 0 700 45" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="height:45px">
+      <!-- Boat 1 -->
+      <g transform="translate(120,5)">
+        <polygon points="8,35 8,5 28,35" fill="white" opacity="0.9"/>
+        <polygon points="8,35 8,10 -8,35" fill="#e8e0cc" opacity="0.8"/>
+        <rect x="-14" y="33" width="36" height="5" rx="2" fill="#c8aa6a"/>
+      </g>
+      <!-- Boat 2 -->
+      <g transform="translate(340,8)">
+        <polygon points="6,28 6,4 22,28" fill="white" opacity="0.9"/>
+        <polygon points="6,28 6,8 -6,28" fill="#e8e0cc" opacity="0.8"/>
+        <rect x="-10" y="26" width="28" height="4" rx="2" fill="#c8aa6a"/>
+      </g>
+      <!-- Boat 3 -->
+      <g transform="translate(540,3)">
+        <polygon points="9,38 9,4 32,38" fill="white" opacity="0.85"/>
+        <polygon points="9,38 9,9 -9,38" fill="#e8e0cc" opacity="0.7"/>
+        <rect x="-16" y="36" width="40" height="5" rx="2" fill="#c8aa6a"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="water-surface"></div>
+
+  <div class="title-bar">
+    <h1 class="site-title">A Kapitány Hangja</h1>
+    <p class="site-subtitle">2026-os kvízjáték</p>
+  </div>
+</header>
+
+<nav>
+  <a href="#" class="active" data-section="leaderboard">🏆 Tabella</a>
+  <a href="#" data-section="napi">📡 Napi Kérdés</a>
+  <a href="#" data-section="archivum">📂 Archívum</a>
+  <a href="#" data-section="szabalyok">📜 Szabályzat</a>
+  <a href="#" data-section="packing">🎒 Packing List</a>
+</nav>
+
+<main>
+
+  <!-- LEADERBOARD -->
+  <section class="section active" id="leaderboard">
+    <div class="sec-head"><h2>⚓ Parancsnoki Tabella</h2></div>
+    <div id="lb-wrap"><div class="loading-state">Fedélzeti adatok betöltése...</div></div>
+    <p class="lb-note" id="lb-updated"></p>
+  </section>
+
+  <!-- NAPI -->
+  <section class="section" id="napi">
+    <div class="sec-head"><h2>📡 Napi Parancs</h2></div>
+    <div id="napi-wrap"><div class="loading-state">Üzenet dekódolása...</div></div>
+  </section>
+
+  <!-- ARCHÍVUM -->
+  <section class="section" id="archivum">
+    <div class="sec-head"><h2>📂 Korábbi Parancsok</h2></div>
+    <div id="arch-wrap"><div class="loading-state">Archívum betöltése...</div></div>
+  </section>
+
+  <!-- SZABÁLYOK -->
+  <section class="section" id="szabalyok">
+    <div class="sec-head"><h2>📜 Hivatalos Szabályzat</h2></div>
+    <div class="rules-card">
+      <h1>„Kapitány Hangja" — Megújulva tér vissza</h1>
+      <p class="rules-dateline">Budapest, 2026. május 26. &nbsp;·&nbsp; Azonnali felhasználásra</p>
+      <p>A pünkösdi hosszú hétvége során Adámy Péter kvízmester szakmai elvonulásán véglegesítésre került az idei év egyik legjobban várt hajós kezdeményezése, a „Kapitány hangja" elnevezésű edukatív kvízjáték koncepciója.</p>
+      <p style="margin-top:0.75rem">A legénység sokszor nehézkesen tudott eleget tenni a kapitányi és fedélzetmesteri utasításoknak. A „Kapitány hangja" célkitűzése éppen ezért kettős: egyrészt szórakoztató felkészülést biztosít a közelgő vitorlás szezonra, másrészt strukturált keretek között fejleszti a matrózok szakmai kompetenciáit – <em>hiszen, valljuk be, van még hova fejlődni.</em></p>
+      <h2>A játék menete</h2>
+      <p>A program <strong>30 napon keresztül</strong> teszi próbára a résztvevőket. Minden nap egy rögzített hangüzenet alapján <strong>vakon</strong> kell azonosítani a pontos hajós utasítást és a hozzá kapcsolódó teendőket. A verseny izgalmait <strong>dupla pontos fordulók</strong> fokozzák.</p>
+      <h2>A válasz formátuma</h2>
+      <p>A kérdésekre adott válasznak <strong>hangüzenet formájában</strong> kell érkeznie a Messenger csoportba. A hangfelvétel <strong>maximum 30 másodperc</strong> lehet. A válaszban pontosan le kell írni hangban:</p>
+      <ul>
+        <li>Mit jelent a kapitány utasítása</li>
+        <li><strong>Hova megyek a hajón</strong> — melyik részen, mi felé</li>
+        <li><strong>Pontosan mit csinálok</strong> — milyen mozdulattal, milyen sorrendben</li>
+        <li><strong>Mire figyelek</strong> — biztonsági szempontok, tipikus hibák</li>
+      </ul>
+      <p style="margin-top:0.5rem">Szöveges válasz nem fogadható el. Hiányos vagy pontatlan hangüzenet részpontot érhet.</p>
+      <h2>Időpontok</h2>
+      <ul>
+        <li><strong>Megnyitó:</strong> 2026. június 5., péntek</li>
+        <li><strong>Zárónap:</strong> 2026. július 3., péntek reggel</li>
+        <li><strong>Élő záróforduló:</strong> közvetlen kapitányi utasításra a fedélzeten</li>
+      </ul>
+      <h2>A tét</h2>
+      <p>A leggyengébben teljesítő játékos nyeri el a <strong>„hajó szobalánya"</strong> címet, ami a 2026-os szezonban teljes körű ki- és beágyazási kötelezettséggel jár a fedélzeten.</p>
+      <div class="tipp-row">💬 Tippjeidet a Messenger csoportban add le — ott zajlik a vita, a buli, az ugratás. Ez az oldal a tabellát és az archívumot mutatja.</div>
+    </div>
+  </section>
+
+  <!-- PACKING LIST -->
+  <section class="section" id="packing">
+    <div class="sec-head"><h2>🎒 Packing List — Vitorlás nyaralás</h2></div>
+    <div class="rules-card">
+
+      <h2>Intézni közvetlenül az utazás előtt</h2>
+      <ul>
+        <li>Hajat vágni</li>
+        <li>Körmöt vágni</li>
+        <li>Növényeket meglocsolni</li>
+        <li>Szemetet kivinni</li>
+        <li>Borotválkozni</li>
+        <li>Zenéket hozzáadni a playlisthez</li>
+      </ul>
+
+      <h2>A gardróbból</h2>
+      <ul>
+        <li>Alsónadrág</li>
+        <li>Fürdőnadrág</li>
+        <li>Hosszúujjú póló</li>
+        <li>Melegítő</li>
+        <li>Pulóver</li>
+        <li>Rövidujjú póló</li>
+        <li>Sort</li>
+        <li>Zokni</li>
+        <li>Hosszúnadrág</li>
+        <li>Alvós párna</li>
+        <li>Esőkabát</li>
+        <li>Vitorlás póló</li>
+        <li>Vitorlás cipő</li>
+        <li>Vitorlás nadrág</li>
+      </ul>
+
+      <h2>A nappaliból</h2>
+      <ul>
+        <li>Powerbank</li>
+        <li>Powerbank töltő</li>
+        <li>Készpénz</li>
+        <li>Bankkártyák</li>
+        <li>Forgalmi engedély</li>
+        <li>Jogosítvány</li>
+        <li>Személyi igazolvány</li>
+        <li>Szemüvegtok</li>
+        <li>Útlevél</li>
+        <li>Algopyrin</li>
+        <li>Óra</li>
+        <li>Telefontöltő</li>
+        <li>Baseball sapka</li>
+        <li>Papucs</li>
+        <li>Napszemüveg</li>
+        <li>Óratöltő</li>
+        <li>Hálózsák</li>
+        <li>Ágynemű</li>
+      </ul>
+
+      <h2>A fürdőszobából</h2>
+      <ul>
+        <li>Dezodor</li>
+        <li>Fogkefe</li>
+        <li>Fogkrém</li>
+        <li>Körömvágó</li>
+        <li>Neszeszer</li>
+        <li>Tusfürdő</li>
+        <li>Parfüm</li>
+        <li>Naptej</li>
+      </ul>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>⚓ A Kapitány Hangja · Balatonföldvár · 2026-os szezon ⚓</footer>
+
+<script>
+// ══════════════════════════════════════
+//  CONFIG — töltsd ki a Sheet URL-eket!
+// ══════════════════════════════════════
+const CONFIG = {
+  SHEET_SCORES_URL:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRJ-XqHTENz2rOQ_KuQe_veGhsGW3WYTaudQQnNWGAYsIII4d96CpyvwU9NcUo_U_z7nbCblDZCw8gL/pub?gid=789808650&single=true&output=csv',
+  SHEET_QUESTIONS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRJ-XqHTENz2rOQ_KuQe_veGhsGW3WYTaudQQnNWGAYsIII4d96CpyvwU9NcUo_U_z7nbCblDZCw8gL/pub?gid=1078320110&single=true&output=csv',
+  USE_DEMO: false
+};
+
+const DEMO_SCORES = [
+  { name: 'Dr. P. Tamás 30',  score: 0 },
+  { name: 'Kuka',             score: 0 },
+  { name: 'Nicotinho',        score: 0 },
+  { name: 'Stefánia Patrik',  score: 0 },
+  { name: 'Toad',             score: 0 },
+  { name: 'Fehér Baliga',     score: 0 },
+];
+
+const DEMO_QUESTIONS = [
+  { date:'2026-06-05', question:'Hozd ki a gázkart!',                       correct_players:'', double:false, audioFile:'audio/1. Hozd ki a gázkart!.m4a' },
+  { date:'2026-06-06', question:'Add ki a kormányhosszabbítót!',             correct_players:'', double:false, audioFile:'audio/2. Add ki a kormányhosszabbítót!.m4a' },
+  { date:'2026-06-07', question:'Pakold el a söröket és a vizeket!',         correct_players:'', double:false, audioFile:'audio/3. Pakold el a söröket és a vizeket!.m4a' },
+  { date:'2026-06-08', question:'Engedd el a hajót az oszlopról!',           correct_players:'', double:false, audioFile:'audio/4. Engedd el a hajót az oszlopról!.m4a' },
+  { date:'2026-06-09', question:'Vedd kézbe a kikötőkötelet!',               correct_players:'', double:false, audioFile:'audio/5. Vedd kézbe a kikötőkötelet!.m4a' },
+  { date:'2026-06-10', question:'Tartsd el az oszlopot!',                    correct_players:'', double:false, audioFile:'audio/6. Tartsd el az oszlopot!.m4a' },
+  { date:'2026-06-11', question:'Dobd rá a kikötőkötelet az oszlopra!',      correct_players:'', double:false, audioFile:'audio/7. Dobd rá a kikötőkötelet az oszlopra!.m4a' },
+  { date:'2026-06-12', question:'Tedd a bika alá a kikötőkötelet!',          correct_players:'', double:false, audioFile:'audio/8. Tedd a bika alá a kikötőkötelet!.m4a' },
+  { date:'2026-06-13', question:'Kösd be a brésottot!',                      correct_players:'', double:false, audioFile:'audio/9. Kösd be a brésottot!.m4a' },
+  { date:'2026-06-14', question:'Pakold el a hátsó kikötőköteleket!',        correct_players:'', double:false, audioFile:'audio/10. Pakold el a hátsó kikötőköteleket!.m4a' },
+  { date:'2026-06-15', question:'Kapcsold be a hűtőt és a hidraulikát!',     correct_players:'', double:false, audioFile:'audio/11.  Kapcsold be a hűtőt és a hidraulikát!.m4a' },
+  { date:'2026-06-16', question:'Vedd be a 220-at!',                         correct_players:'', double:false, audioFile:'audio/12. Vedd be a 220-at!.m4a' },
+  { date:'2026-06-17', question:'Tedd el a puffereket!',                     correct_players:'', double:false, audioFile:'audio/13. Tedd el a puffereket!.m4a' },
+  { date:'2026-06-18', question:'Rakjátok ki a puffereket!',                 correct_players:'', double:false, audioFile:'audio/14. Rakjátok ki a puffereket!.m4a' },
+  { date:'2026-06-19', question:'Vedd le a fokkotont!',                      correct_players:'', double:false, audioFile:'audio/15. Vedd le a fokkotont!.m4a' },
+  { date:'2026-06-20', question:'Vedd le a grószkotont!',                    correct_players:'', double:false, audioFile:'audio/15. Vedd le a grószkotont!.m4a' },
+  { date:'2026-06-21', question:'Tegyétek el a lézidzseket!',                correct_players:'', double:false, audioFile:'audio/17. Tegyétek el a lézidzseket!.m4a' },
+  { date:'2026-06-22', question:'Kösd be a grószfalat!',                     correct_players:'', double:false, audioFile:'audio/18. Kösd be a grószfalat!.m4a' },
+  { date:'2026-06-23', question:'Húzz utána a grószfalnak!',                 correct_players:'', double:false, audioFile:'audio/19. Húzz utána a grószfalnak!.m4a' },
+  { date:'2026-06-24', question:'Ülj lébe!',                                 correct_players:'', double:false, audioFile:'audio/20. Ülj lébe!.m4a' },
+  { date:'2026-06-25', question:'Ülj ki!',                                   correct_players:'', double:false, audioFile:'audio/21. Ülj ki!.m4a' },
+  { date:'2026-06-26', question:'Engedj a fokra!',                           correct_players:'', double:false, audioFile:'audio/22. Engedj a fokra!.m4a' },
+  { date:'2026-06-27', question:'Húzd meg az albát!',                        correct_players:'', double:false, audioFile:'audio/23. Húzd meg az albát!.m4a' },
+  { date:'2026-06-28', question:'Forduláshoz felkészülni!',                  correct_players:'', double:false, audioFile:'audio/24. Forduláshoz felkészülni!.m4a' },
+  { date:'2026-06-29', question:'Nézz a szálingra!',                         correct_players:'', double:false, audioFile:'audio/25. Nézz a szálingra!.m4a' },
+  { date:'2026-06-30', question:'Húzz a beksztégre!',                        correct_players:'', double:false, audioFile:'audio/26. Húzz a beksztégre!.m4a' },
+  { date:'2026-07-01', question:'Szedjük le a grószt!',                      correct_players:'', double:false, audioFile:'audio/27. Szedjük le a grószt!.m4a' },
+  { date:'2026-07-02', question:'Te hajtogatott elől!',                      correct_players:'', double:false, audioFile:'audio/28. Te hajtogatott elől!.m4a' },
+  { date:'2026-07-03', question:'Tedd fel a fok kotont!',                    correct_players:'', double:false, audioFile:'audio/29. Tedd fel a fok kotont!.m4a' },
+  { date:'2026-07-04', question:'Emeld fel a trepnit!',                      correct_players:'', double:false, audioFile:'audio/30. Emeld fel a trepnit!.m4a' },
+];
+
+// ── NAV ──
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('nav a').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+    a.classList.add('active');
+    document.getElementById(a.dataset.section).classList.add('active');
+  });
+});
+
+// ── CSV ──
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).map(line => {
+    const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g,''));
+    const o = {};
+    headers.forEach((h,i) => o[h] = vals[i]||'');
+    return o;
+  });
+}
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+// ── LEADERBOARD ──
+async function loadLB() {
+  let players = [];
+  if (!CONFIG.USE_DEMO && CONFIG.SHEET_SCORES_URL) {
+    try {
+      const r = await fetch(CONFIG.SHEET_SCORES_URL);
+      const rows = parseCSV(await r.text());
+      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseInt(r['Összesen']||r['osszesen']||'0')||0 }));
+    } catch { players = DEMO_SCORES; }
+  } else { players = DEMO_SCORES; }
+
+  players.sort((a,b) => b.score - a.score);
+  const allZero = players.every(p => p.score === 0);
+  const minScore = players.length ? players[players.length-1].score : 0;
+
+  let html = '<table class="lb-table"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th></tr></thead><tbody>';
+  players.forEach((p,i) => {
+    const cls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+    const sym = i===0?'⚓':i===1?'2':i===2?'3':(i+1);
+    const isLast = !allZero && p.score===minScore && i===players.length-1;
+    html += `<tr class="${cls}">
+      <td class="rank-num">${sym}</td>
+      <td class="player-nm">${p.name}${isLast?'<span class="szobalanya">⚠ Szobalánya jelölt</span>':''}</td>
+      <td class="score-val">${p.score}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  if (allZero) html += '<p style="text-align:center;margin-top:1rem;color:#bbb;font-style:italic;font-size:0.85rem">A verseny ma kezdődött — mindenki 0 ponton áll. Első kérdés a Messengerben!</p>';
+
+  document.getElementById('lb-wrap').innerHTML = html;
+  document.getElementById('lb-updated').textContent = 'Frissítve: ' + new Date().toLocaleString('hu-HU');
+}
+
+// ── DAILY ──
+async function loadDaily() {
+  let qs = CONFIG.USE_DEMO || !CONFIG.SHEET_QUESTIONS_URL ? DEMO_QUESTIONS : [];
+  if (!CONFIG.USE_DEMO && CONFIG.SHEET_QUESTIONS_URL) {
+    try { qs = parseCSV(await (await fetch(CONFIG.SHEET_QUESTIONS_URL)).text()); }
+    catch { qs = DEMO_QUESTIONS; }
+  }
+
+  const today = todayStr();
+  const q = qs.find(x => (x.date||x['Dátum']||x['datum']||'')=== today);
+  const el = document.getElementById('napi-wrap');
+
+  if (!q) {
+    const d = new Date(today), s = new Date('2026-06-05'), e = new Date('2026-07-04');
+    if (d < s) el.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><p>A verseny <strong>2026. június 5-én</strong> indul.<br>Addig: készülj, igyál kisfröccsöt, nézd a Badacsonyt.</p></div>`;
+    else if (d > e) el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A verseny lezárult. Jövőre újra!</p></div>`;
+    else el.innerHTML = `<div class="empty-state"><div class="empty-icon">📡</div><p>Ma még nem érkezett parancs.<br>A kvízmester hamarosan küldi a napi kérdést a Messengerbe.</p></div>`;
+    return;
+  }
+
+  const qData = { date: q.date||q['Dátum']||q['datum']||today, question: q.question||q['Kérdés']||q['kerdes']||'', correct_players: q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'', double: (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true', audioFile: q.audioFile||q['Hangfájl']||q['hangfajl']||'' };
+  const dayNum = qs.indexOf(q)+1;
+  const dateStr = new Date(qData.date+'T12:00:00').toLocaleDateString('hu-HU',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+
+  el.innerHTML = `<div class="q-card">
+    <div class="q-card-top">
+      <span class="q-day-info">${dayNum}. nap &nbsp;·&nbsp; ${dateStr}</span>
+      ${qData.double ? '<span class="double-badge">⚡ Dupla Pont</span>' : ''}
+    </div>
+    <div class="q-card-body">
+      <div class="q-number-bg">${dayNum}</div>
+      <div class="q-text">${qData.audioFile ? '🔊 Hallgasd meg a kapitány hangját!' : qData.question}</div>
+      ${qData.audioFile ? buildPlayer(qData.audioFile) : ''}
+      <p class="q-hint">📨 Tippjeidet a Messenger csoportba küldd el. A kvízmester rögzíti és értékeli a válaszokat.</p>
+    </div>
+  </div>`;
+
+  if (qData.audioFile) initPlayer(qData.audioFile);
+}
+
+function buildPlayer(src) {
+  return `<div class="audio-wrap">
+    <div class="audio-label">▶ Kapitány hangüzenete</div>
+    <div class="player-row">
+      <button class="play-btn" id="pBtn" onclick="toggleAudio()">▶</button>
+      <div class="wave-bars" id="wBars"></div>
+      <div class="audio-time" id="aTime">0:00</div>
+    </div>
+    <audio id="aEl" src="${encodeURI(src)}" type="audio/mp4"></audio>
+  </div>`;
+}
+
+function initPlayer(src) {
+  const wb = document.getElementById('wBars');
+  if (!wb) return;
+  for (let i=0;i<52;i++) {
+    const b = document.createElement('div');
+    b.className='wbar';
+    b.style.height=(4+Math.random()*26)+'px';
+    wb.appendChild(b);
+  }
+  const a = document.getElementById('aEl');
+  if (!a) return;
+  a.addEventListener('timeupdate', () => {
+    const p = a.currentTime/(a.duration||1);
+    wb.querySelectorAll('.wbar').forEach((b,i) => b.classList.toggle('done', i/52<=p));
+    const m=Math.floor(a.currentTime/60), s=Math.floor(a.currentTime%60).toString().padStart(2,'0');
+    document.getElementById('aTime').textContent=m+':'+s;
+  });
+  a.addEventListener('ended',()=>{ document.getElementById('pBtn').textContent='▶'; });
+}
+
+window.toggleAudio = () => {
+  const a=document.getElementById('aEl'), b=document.getElementById('pBtn');
+  if (!a) return;
+  a.paused ? (a.play(), b.textContent='⏸') : (a.pause(), b.textContent='▶');
+};
+
+// ── ARCHIVE ──
+async function loadArchive() {
+  let qs = CONFIG.USE_DEMO || !CONFIG.SHEET_QUESTIONS_URL ? DEMO_QUESTIONS : [];
+  if (!CONFIG.USE_DEMO && CONFIG.SHEET_QUESTIONS_URL) {
+    try { qs = parseCSV(await (await fetch(CONFIG.SHEET_QUESTIONS_URL)).text()); }
+    catch { qs = DEMO_QUESTIONS; }
+  }
+
+  const today = todayStr();
+  const past = qs.filter(q => (q.date||q['Dátum']||q['datum']||'') < today);
+  const el = document.getElementById('arch-wrap');
+
+  if (!past.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><p>Még nincsenek lezárt kérdések.<br>A verseny ma kezdődött!</p></div>';
+    return;
+  }
+
+  el.innerHTML = [...past].reverse().map((q,i) => {
+    const date    = q.date||q['Dátum']||q['datum']||'';
+    const quest   = q.question||q['Kérdés']||q['kerdes']||'—';
+    const players = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'Hamarosan';
+    const dbl     = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
+    const dayN  = qs.indexOf(q)+1;
+    const ds    = date ? new Date(date+'T12:00:00').toLocaleDateString('hu-HU',{month:'long',day:'numeric',weekday:'short'}) : '?';
+    return `<div class="arch-item" id="a${i}">
+      <div class="arch-hd" onclick="tog('a${i}')">
+        <span class="arch-day">${dayN}. nap</span>
+        <span class="arch-q-preview">${ds}${dbl?' ⚡':''}</span>
+        <span class="arch-chev">▶</span>
+      </div>
+      <div class="arch-body">
+        <div class="arch-label">Kérdés</div>
+        <div class="arch-val">${quest}</div>
+        <div class="arch-label">Ki válaszolt helyesen</div>
+        <div class="arch-val">${players}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.tog = id => document.getElementById(id).classList.toggle('open');
+
+// ── INIT ──
+loadLB(); loadDaily(); loadArchive();
+</script>
+</body>
+</html>
