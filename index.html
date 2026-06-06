@@ -275,6 +275,35 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   text-align: right;
 }
 
+/* Büntetőfeles oszlop — vizuálisan elkülönítve a pontoktól */
+.penalty-th {
+  background: #3d2a0a !important;
+  color: rgba(255,220,150,0.75) !important;
+  border-left: 3px solid #c8aa6a;
+  text-align: right !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.1em !important;
+}
+.penalty-cell {
+  border-left: 3px solid #e8dfc8;
+  background: #fffbf4;
+  text-align: right;
+  padding-right: 1.1rem !important;
+  min-width: 5rem;
+}
+.penalty-val {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #a06010;
+}
+.penalty-zero {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  color: #ccc;
+}
+.lb-table tr:hover .penalty-cell { background: #fdf3e0; }
+
 .szobalanya {
   font-size: 0.68rem;
   color: var(--wine-l);
@@ -889,18 +918,37 @@ async function loadLB() {
   let lastRank = 1;
   const finalRanks = ranks.map(r => { if (r !== null) lastRank = r; return lastRank; });
 
-  let html = '<table class="lb-table"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th></tr></thead><tbody>';
+  // Büntetőfeles számolás a kérdések alapján
+  let penaltyMap = {};
+  players.forEach(p => penaltyMap[p.name] = 0);
+  try {
+    let allQs = DEMO_QUESTIONS;
+    if (!CONFIG.USE_DEMO && CONFIG.SHEET_QUESTIONS_URL) {
+      const qr = await fetch(CONFIG.SHEET_QUESTIONS_URL);
+      allQs = parseCSV(await qr.text());
+    }
+    const today = todayStr();
+    allQs.filter(q => (q.date||q['datum']||'') < today).forEach(q => {
+      const nemV = q.nem_valaszolt||q['nem_valaszolt']||'';
+      nemV.split(',').map(n => n.trim()).filter(Boolean).forEach(name => {
+        if (penaltyMap.hasOwnProperty(name)) penaltyMap[name]++;
+      });
+    });
+  } catch(e) {}
+
+  let html = '<table class="lb-table"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th><th class="penalty-th">Büntetőfeles</th></tr></thead><tbody>';
   players.forEach((p,i) => {
     const rank = finalRanks[i];
-    const isTied = players.filter(x => x.score === p.score).length > 1;
     const cls = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'';
-    const sym = rank===1 ? (isTied ? '⚓' : '⚓') : rank;
+    const sym = rank===1 ? '⚓' : rank;
     const isLast = !allZero && p.score===minScore;
-    const isLastUnique = isLast && players.filter(x => x.score === minScore).length === players.length - players.filter(x => x.score > minScore).length;
+    const penalties = penaltyMap[p.name] || 0;
+    const scoreStr = Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',');
     html += `<tr class="${cls}">
       <td class="rank-num">${sym}</td>
       <td class="player-nm">${p.name}${isLast && !allZero?'<span class="szobalanya">⚠ Szobalány jelölt</span>':''}</td>
-      <td class="score-val">${Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',')}</td>
+      <td class="score-val">${scoreStr}</td>
+      <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
@@ -1010,10 +1058,11 @@ async function loadArchive() {
   }
 
   el.innerHTML = [...past].reverse().map((q,i) => {
-    const date    = q.date||q['Dátum']||q['datum']||'';
-    const quest   = q.question||q['Kérdés']||q['kerdes']||'—';
-    const players = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'Hamarosan';
-    const dbl     = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
+    const date       = q.date||q['Dátum']||q['datum']||'';
+    const quest      = q.question||q['Kérdés']||q['kerdes']||'—';
+    const players    = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'';
+    const nemValasz  = q.nem_valaszolt||q['Nem válaszolt']||'';
+    const dbl        = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
     const dayN  = qs.indexOf(q)+1;
     const ds    = date ? new Date(date+'T12:00:00').toLocaleDateString('hu-HU',{month:'long',day:'numeric',weekday:'short'}) : '?';
     return `<div class="arch-item" id="a${i}">
@@ -1026,7 +1075,9 @@ async function loadArchive() {
         <div class="arch-label">Kérdés</div>
         <div class="arch-val">${quest}</div>
         <div class="arch-label">Ki válaszolt helyesen</div>
-        <div class="arch-val">${players}</div>
+        <div class="arch-val">${players || '<em style="color:#bbb">—</em>'}</div>
+        ${nemValasz ? `<div class="arch-label" style="color:#a06010">Nem válaszolt — büntetőfeles</div>
+        <div class="arch-val" style="color:#a06010">${nemValasz}</div>` : ''}
       </div>
     </div>`;
   }).join('');
