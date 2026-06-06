@@ -813,11 +813,30 @@ document.querySelectorAll('nav a').forEach(a => {
 });
 
 // ── CSV ──
+function splitCSVLine(line) {
+  // Handles quoted fields (e.g. "0,5" with comma inside)
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; }
+    else if (c === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+    else { cur += c; }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function parseHUFloat(s) {
+  // Handles both "0.5" and "0,5" (Hungarian decimal comma)
+  return parseFloat((s||'0').replace(',', '.')) || 0;
+}
+
 function parseCSV(text) {
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  const headers = splitCSVLine(lines[0]);
   return lines.slice(1).map(line => {
-    const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g,''));
+    const vals = splitCSVLine(line);
     const o = {};
     headers.forEach((h,i) => o[h] = vals[i]||'');
     return o;
@@ -840,14 +859,14 @@ async function loadLB() {
         return first === 'játékos' || first === 'jatekos';
       });
       const startIdx = headerIdx >= 0 ? headerIdx : 1;
-      const headers = lines[startIdx].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+      const headers = splitCSVLine(lines[startIdx]);
       const rows = lines.slice(startIdx+1).map(line => {
-        const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g,''));
+        const vals = splitCSVLine(line);
         const o = {};
         headers.forEach((h,i) => o[h] = vals[i]||'');
         return o;
       });
-      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseFloat((r['Összesen']||r['osszesen']||'0').replace(',','.')) || 0 }))
+      players = rows.map(r => ({ name: r['Játékos']||r['jatekos']||'', score: parseHUFloat(r['Összesen']||r['osszesen']||'0') }))
         .filter(p => p.name && p.name.length < 50 && !p.name.includes('ℹ') && !p.name.includes('pontos') && !p.name.includes('oszlop'));
     } catch(e) { players = DEMO_SCORES; }
   } else { players = DEMO_SCORES; }
@@ -881,7 +900,7 @@ async function loadLB() {
     html += `<tr class="${cls}">
       <td class="rank-num">${sym}</td>
       <td class="player-nm">${p.name}${isLast && !allZero?'<span class="szobalanya">⚠ Szobalány jelölt</span>':''}</td>
-      <td class="score-val">${p.score}</td>
+      <td class="score-val">${Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',')}</td>
     </tr>`;
   });
   html += '</tbody></table>';
