@@ -184,55 +184,40 @@ header {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(200,232,248,0.6);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 .countdown-display {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  gap: 0.15rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
-.cd-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 3.8rem;
+.cd-prefix {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  color: rgba(200,232,248,0.55);
 }
 .cd-num {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
   font-weight: 900;
   color: #c8e8f8;
   line-height: 1;
   letter-spacing: -0.02em;
 }
-.cd-unit {
+.cd-suffix {
   font-family: 'Lato', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(200,232,248,0.5);
-  margin-top: 0.2rem;
-}
-.cd-sep {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-  color: rgba(200,232,248,0.25);
-  line-height: 1;
-  padding-bottom: 0.6rem;
-  align-self: flex-end;
+  font-weight: 300;
+  font-size: 1rem;
+  color: rgba(200,232,248,0.55);
 }
 .cd-done {
   font-family: 'Playfair Display', serif;
   font-size: 1.3rem;
   color: var(--lake-l);
   font-style: italic;
-}
-@media (max-width: 400px) {
-  .cd-num { font-size: 1.5rem; }
-  .cd-block { min-width: 2.8rem; }
 }
 
 /* ═══ NAV ═══ */
@@ -1169,33 +1154,16 @@ function updateCountdown() {
     return;
   }
 
-  const days    = Math.floor(diff / 86400000);
-  const hours   = Math.floor((diff % 86400000) / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
+  const totalMinutes = Math.floor(diff / 60000);
+  const formatted = totalMinutes.toLocaleString('hu-HU');
 
-  const pad = n => String(n).padStart(2, '0');
-
-  if (days > 0) {
-    el.innerHTML = `
-      <div class="cd-block"><span class="cd-num">${days}</span><span class="cd-unit">nap</span></div>
-      <span class="cd-sep">·</span>
-      <div class="cd-block"><span class="cd-num">${pad(hours)}</span><span class="cd-unit">óra</span></div>
-      <span class="cd-sep">·</span>
-      <div class="cd-block"><span class="cd-num">${pad(minutes)}</span><span class="cd-unit">perc</span></div>
-      <span class="cd-sep">·</span>
-      <div class="cd-block"><span class="cd-num">${pad(seconds)}</span><span class="cd-unit">mp</span></div>`;
-  } else {
-    el.innerHTML = `
-      <div class="cd-block"><span class="cd-num">${pad(hours)}</span><span class="cd-unit">óra</span></div>
-      <span class="cd-sep">·</span>
-      <div class="cd-block"><span class="cd-num">${pad(minutes)}</span><span class="cd-unit">perc</span></div>
-      <span class="cd-sep">·</span>
-      <div class="cd-block"><span class="cd-num">${pad(seconds)}</span><span class="cd-unit">mp</span></div>`;
-  }
+  el.innerHTML = `
+    <span class="cd-prefix">Még</span>
+    <span class="cd-num">${formatted}</span>
+    <span class="cd-suffix">perc van vissza</span>`;
 }
 updateCountdown();
-setInterval(updateCountdown, 1000);
+setInterval(updateCountdown, 60000);
 
 // ── INIT ──
 loadLB(); loadDaily(); loadArchive();
