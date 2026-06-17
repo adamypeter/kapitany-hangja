@@ -624,6 +624,35 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   color: #555;
 }
 
+/* ═══ SPOTIFY BUTTON ═══ */
+.spotify-wrap {
+  margin-bottom: 1.5rem;
+}
+.spotify-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #1DB954;
+  color: white;
+  text-decoration: none;
+  padding: 0.85rem 1.4rem;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 3px 12px rgba(29,185,84,0.35);
+}
+.spotify-btn:hover { background: #17a349; transform: translateY(-1px); }
+.spotify-btn:active { transform: translateY(0); }
+.spotify-icon {
+  width: 32px; height: 32px;
+  flex-shrink: 0;
+}
+.spotify-text { flex: 1; }
+.spotify-text strong { display: block; font-size: 1rem; }
+.spotify-text span { font-weight: 300; font-size: 0.78rem; opacity: 0.85; letter-spacing: 0.08em; text-transform: uppercase; }
+
 /* ═══ FOOTER ═══ */
 footer {
   background: var(--ink);
@@ -762,6 +791,18 @@ footer {
   <!-- PACKING LIST -->
   <section class="section" id="packing">
     <div class="sec-head"><h2>🎒 Packing List — Vitorlás nyaralás</h2></div>
+    <div class="spotify-wrap">
+      <a class="spotify-btn" href="https://open.spotify.com/playlist/2EQ6r8xEzsdtvUGc8vnGzx?si=2f49fa9e7d3a40a5" target="_blank" rel="noopener">
+        <svg class="spotify-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+        <div class="spotify-text">
+          <strong>Nyaralós Playlist</strong>
+          <span>Megnyitás Spotifyon</span>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7-7 7M3 12h17"/></svg>
+      </a>
+    </div>
     <div class="rules-card">
 
       <h2>Intézni közvetlenül az utazás előtt</h2>
@@ -929,6 +970,18 @@ function parseCSV(text) {
 
 function todayStr() { return new Date().toISOString().split('T')[0]; }
 
+// A kvízjáték záróidőpontja: 2026-07-04 09:00 CEST (= 07:00 UTC)
+// Ez után a július 4-i kérdés is az archívumba kerül, és új tipp nem adható le.
+const GAME_END = new Date('2026-07-04T07:00:00Z');
+
+function effectiveToday() {
+  const now = new Date();
+  if (now >= GAME_END) return '2026-07-05'; // júl. 4-i kérdés is archívumba kerül
+  return todayStr();
+}
+
+function gameOver() { return new Date() >= GAME_END; }
+
 // ── LEADERBOARD ──
 async function loadLB() {
   let players = [];
@@ -982,7 +1035,7 @@ async function loadLB() {
       const qr = await fetch(CONFIG.SHEET_QUESTIONS_URL);
       allQs = parseCSV(await qr.text());
     }
-    const today = todayStr();
+    const today = effectiveToday();
     allQs.filter(q => (q.date||q['datum']||'') < today).forEach(q => {
       const nemV = q.nem_valaszolt||q['nem_valaszolt']||'';
       nemV.split(',').map(n => n.trim()).filter(Boolean).forEach(name => {
@@ -1001,7 +1054,7 @@ async function loadLB() {
     const scoreStr = Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',');
     html += `<tr class="${cls}">
       <td class="rank-num">${sym}</td>
-      <td class="player-nm">${p.name}${isLast && !allZero?'<span class="szobalanya">⚠ Szobalány jelölt</span>':''}</td>
+      <td class="player-nm">${p.name}${isLast && !allZero?`<span class="szobalanya">⚠ ${gameOver()?'Szobalány':'Szobalány jelölt'}</span>`:''}</td>
       <td class="score-val">${scoreStr}</td>
       <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
     </tr>`;
@@ -1021,14 +1074,14 @@ async function loadDaily() {
     catch { qs = DEMO_QUESTIONS; }
   }
 
-  const today = todayStr();
+  const today = effectiveToday();
   const q = qs.find(x => (x.date||x['Dátum']||x['datum']||'')=== today);
   const el = document.getElementById('napi-wrap');
 
   if (!q) {
-    const d = new Date(today), s = new Date('2026-06-05'), e = new Date('2026-07-04');
-    if (d < s) el.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><p>A verseny <strong>2026. június 5-én</strong> indul.<br>Addig: készülj, igyál kisfröccsöt, nézd a Badacsonyt.</p></div>`;
-    else if (d > e) el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A verseny lezárult. Jövőre újra!</p></div>`;
+    const d = new Date(today), s = new Date('2026-06-05');
+    if (gameOver()) el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A kvízjáték lezárult — 2026. július 4-én 09:00-kor.<br>Köszönjük a részvételt, fel a fedélzetre!</p></div>`;
+    else if (d < s) el.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><p>A verseny <strong>2026. június 5-én</strong> indul.<br>Addig: készülj, igyál kisfröccsöt, nézd a Badacsonyt.</p></div>`;
     else el.innerHTML = `<div class="empty-state"><div class="empty-icon">📡</div><p>Ma még nem érkezett parancs.<br>A kvízmester hamarosan küldi a napi kérdést a Messengerbe.</p></div>`;
     return;
   }
@@ -1103,7 +1156,7 @@ async function loadArchive() {
     catch { qs = DEMO_QUESTIONS; }
   }
 
-  const today = todayStr();
+  const today = effectiveToday();
   const past = qs.filter(q => (q.date||q['Dátum']||q['datum']||'') < today);
   const el = document.getElementById('arch-wrap');
 
