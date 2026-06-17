@@ -930,6 +930,7 @@ const DEMO_QUESTIONS = [
 // ── NAV ──
 document.querySelectorAll('nav a').forEach(a => {
   a.addEventListener('click', e => {
+    if (!a.dataset.section) return; // külső link — ne akadályozzuk meg
     e.preventDefault();
     document.querySelectorAll('nav a').forEach(x => x.classList.remove('active'));
     document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
