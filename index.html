@@ -775,10 +775,20 @@ footer {
         <li><strong>Mire figyelek</strong> — biztonsági szempontok, tipikus hibák</li>
       </ul>
       <p style="margin-top:0.5rem">Szöveges válasz nem fogadható el. Hiányos vagy pontatlan hangüzenet részpontot érhet.</p>
+      <h2>Dupla pontos fordulók</h2>
+      <p>Az alábbi napokon a helyes válasz <strong>kétszeres pontot</strong> ér:</p>
+      <ul>
+        <li>2026. június 21., vasárnap</li>
+        <li>2026. június 27., szombat</li>
+        <li>2026. június 29., hétfő</li>
+        <li>2026. július 3., péntek — záróforduló (09:00–10:00)</li>
+      </ul>
       <h2>Időpontok</h2>
       <ul>
         <li><strong>Megnyitó:</strong> 2026. június 5., péntek</li>
-        <li><strong>Zárónap:</strong> 2026. július 3., péntek reggel</li>
+        <li><strong>29. kérdés:</strong> 2026. július 3., péntek — éjféltől 09:00-ig</li>
+        <li><strong>30. záróforduló (dupla pontos):</strong> 2026. július 3., péntek — 09:00–10:00</li>
+        <li><strong>A kvízjáték lezárása:</strong> 2026. július 3., péntek — 10:00 (közép-európai nyári idő)</li>
         <li><strong>Élő záróforduló:</strong> közvetlen kapitányi utasításra a fedélzeten</li>
       </ul>
       <h2>Büntetőfeles</h2>
@@ -911,20 +921,20 @@ const DEMO_QUESTIONS = [
   { date:'2026-06-18', question:'Rakjátok ki a puffereket!',                 correct_players:'', double:false, audioFile:'audio/14.m4a' },
   { date:'2026-06-19', question:'Vedd le a fokkotont!',                      correct_players:'', double:false, audioFile:'audio/15.m4a' },
   { date:'2026-06-20', question:'Vedd le a grószkotont!',                    correct_players:'', double:false, audioFile:'audio/16.m4a' },
-  { date:'2026-06-21', question:'Tegyétek el a lézidzseket!',                correct_players:'', double:false, audioFile:'audio/17.m4a' },
+  { date:'2026-06-21', question:'Tegyétek el a lézidzseket!',                correct_players:'', double:true,  audioFile:'audio/17.m4a' },
   { date:'2026-06-22', question:'Kösd be a grószfalat!',                     correct_players:'', double:false, audioFile:'audio/18.m4a' },
   { date:'2026-06-23', question:'Húzz utána a grószfalnak!',                 correct_players:'', double:false, audioFile:'audio/19.m4a' },
   { date:'2026-06-24', question:'Ülj lébe!',                                 correct_players:'', double:false, audioFile:'audio/20.m4a' },
   { date:'2026-06-25', question:'Ülj ki!',                                   correct_players:'', double:false, audioFile:'audio/21.m4a' },
   { date:'2026-06-26', question:'Engedj a fokra!',                           correct_players:'', double:false, audioFile:'audio/22.m4a' },
-  { date:'2026-06-27', question:'Húzd meg az albát!',                        correct_players:'', double:false, audioFile:'audio/23.m4a' },
+  { date:'2026-06-27', question:'Húzd meg az albát!',                        correct_players:'', double:true,  audioFile:'audio/23.m4a' },
   { date:'2026-06-28', question:'Forduláshoz felkészülni!',                  correct_players:'', double:false, audioFile:'audio/24.m4a' },
-  { date:'2026-06-29', question:'Nézz a szálingra!',                         correct_players:'', double:false, audioFile:'audio/25.m4a' },
+  { date:'2026-06-29', question:'Nézz a szálingra!',                         correct_players:'', double:true,  audioFile:'audio/25.m4a' },
   { date:'2026-06-30', question:'Húzz a beksztégre!',                        correct_players:'', double:false, audioFile:'audio/26.m4a' },
   { date:'2026-07-01', question:'Szedjük le a grószt!',                      correct_players:'', double:false, audioFile:'audio/27.m4a' },
   { date:'2026-07-02', question:'Te hajtogatott elől!',                      correct_players:'', double:false, audioFile:'audio/28.m4a' },
-  { date:'2026-07-03', question:'Tedd fel a fok kotont!',                    correct_players:'', double:false, audioFile:'audio/29.m4a' },
-  { date:'2026-07-04', question:'Emeld fel a trepnit!',                      correct_players:'', double:false, audioFile:'audio/30.m4a' },
+  { date:'2026-07-03',   question:'Tedd fel a fok kotont!',  correct_players:'', double:false, audioFile:'audio/29.m4a' },
+  { date:'2026-07-03-2', question:'Emeld fel a trepnit!',   correct_players:'', double:true,  audioFile:'audio/30.m4a' },
 ];
 
 // ── NAV ──
@@ -972,13 +982,17 @@ function parseCSV(text) {
 
 function todayStr() { return new Date().toISOString().split('T')[0]; }
 
-// A kvízjáték záróidőpontja: 2026-07-04 09:00 CEST (= 07:00 UTC)
-// Ez után a július 4-i kérdés is az archívumba kerül, és új tipp nem adható le.
-const GAME_END = new Date('2026-07-04T07:00:00Z');
+// Július 3-án két kérdés van:
+//   09:00-ig (07:00 UTC):  29. kérdés — "Tedd fel a fok kotont!"
+//   09:00–10:00 (07–08 UTC): 30. záróforduló — "Emeld fel a trepnit!" (dupla pontos)
+// 10:00-kor (08:00 UTC) zárul a kvízjáték teljesen.
+const QUIZ_DAY2_START = new Date('2026-07-03T07:00:00Z'); // júl. 3. 09:00 CEST
+const GAME_END        = new Date('2026-07-03T08:00:00Z'); // júl. 3. 10:00 CEST
 
 function effectiveToday() {
   const now = new Date();
-  if (now >= GAME_END) return '2026-07-05'; // júl. 4-i kérdés is archívumba kerül
+  if (now >= GAME_END)        return '2026-07-04';   // mindkét júl. 3-i kérdés archívumba
+  if (now >= QUIZ_DAY2_START) return '2026-07-03-2'; // záróforduló aktív
   return todayStr();
 }
 
@@ -1082,7 +1096,7 @@ async function loadDaily() {
 
   if (!q) {
     const d = new Date(today), s = new Date('2026-06-05');
-    if (gameOver()) el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A kvízjáték lezárult — 2026. július 4-én 09:00-kor.<br>Köszönjük a részvételt, fel a fedélzetre!</p></div>`;
+    if (gameOver()) el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A kvízjáték lezárult — 2026. július 3-án 10:00-kor.<br>Köszönjük a részvételt, fel a fedélzetre!</p></div>`;
     else if (d < s) el.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><p>A verseny <strong>2026. június 5-én</strong> indul.<br>Addig: készülj, igyál kisfröccsöt, nézd a Badacsonyt.</p></div>`;
     else el.innerHTML = `<div class="empty-state"><div class="empty-icon">📡</div><p>Ma még nem érkezett parancs.<br>A kvízmester hamarosan küldi a napi kérdést a Messengerbe.</p></div>`;
     return;
@@ -1197,8 +1211,8 @@ window.tog = id => document.getElementById(id).classList.toggle('open');
 
 // ── COUNTDOWN ──
 function updateCountdown() {
-  // 2026-07-04 09:00:00 CEST (UTC+2)
-  const target = new Date('2026-07-04T07:00:00Z');
+  // 2026-07-03 09:00:00 CEST (UTC+2)
+  const target = new Date('2026-07-03T07:00:00Z');
   const now = new Date();
   const diff = target - now;
   const el = document.getElementById('countdown');
