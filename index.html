@@ -315,6 +315,12 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   font-size: 1rem;
 }
 .rank-1 .player-nm { color: var(--lake-d); }
+.player-link {
+  cursor: pointer;
+  border-bottom: 1px dashed rgba(30,138,191,0.35);
+  transition: color 0.15s, border-color 0.15s;
+}
+.player-link:hover { color: var(--lake); border-bottom-color: var(--lake); }
 
 .score-val {
   font-family: 'Playfair Display', serif;
@@ -624,6 +630,352 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   color: #555;
 }
 
+/* ═══ VÉGEREDMÉNY / DOBOGÓ ═══ */
+.final-banner {
+  background: var(--wine);
+  color: var(--sand);
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.podium-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.podium-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  max-width: 200px;
+}
+
+.podium-crown {
+  font-size: 1.6rem;
+  margin-bottom: 0.2rem;
+}
+
+.podium-name {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-align: center;
+  color: var(--ink);
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+}
+.p1-name { font-size: 1rem; color: var(--lake-d); }
+
+.podium-score {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--wine);
+  margin-bottom: 0.4rem;
+}
+.p1-score { font-size: 1.7rem; color: var(--lake-d); }
+
+.podium-block {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px 2px 0 0;
+}
+.p1-block { height: 90px; background: linear-gradient(180deg, #d4a017 0%, #b8880e 100%); }
+.p2-block { height: 65px; background: linear-gradient(180deg, #9e9e9e 0%, #7a7a7a 100%); }
+.p3-block { height: 48px; background: linear-gradient(180deg, #b87333 0%, #8f5520 100%); }
+
+.podium-rank {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: rgba(255,255,255,0.9);
+}
+
+.szobalany-final {
+  margin-top: 2rem;
+  background: var(--navy);
+  border: 3px solid var(--sand-d);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+}
+.szobalany-icon { font-size: 2.2rem; margin-bottom: 0.4rem; }
+.szobalany-title {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--sand-d);
+  margin-bottom: 0.5rem;
+}
+.szobalany-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--sand);
+  margin-bottom: 0.35rem;
+}
+.szobalany-detail {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(232,213,163,0.55);
+}
+
+/* ═══ JÁTÉKOS PROFIL MODAL ═══ */
+.profile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,30,45,0.75);
+  z-index: 900;
+  overflow-y: auto;
+  padding: 1.5rem 1rem 3rem;
+}
+.profile-overlay.open { display: block; animation: fadeUp 0.2s ease; }
+
+.profile-card {
+  background: var(--cream);
+  max-width: 680px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.profile-close {
+  position: absolute;
+  top: 0.75rem; right: 0.75rem;
+  background: none; border: none;
+  font-size: 1.4rem; color: rgba(200,232,248,0.6);
+  cursor: pointer; line-height: 1;
+  z-index: 1;
+}
+.profile-close:hover { color: white; }
+
+.profile-header {
+  background: var(--navy);
+  padding: 1.5rem 1.5rem 1.25rem;
+  text-align: center;
+}
+.profile-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--lake-d);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 0.75rem;
+  border: 3px solid var(--sand-d);
+}
+.profile-playername {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sand);
+}
+.profile-rank-badge {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(200,232,248,0.6);
+}
+
+.profile-stats-row {
+  display: flex;
+  border-bottom: 1px solid #e0d8c0;
+}
+.profile-stat {
+  flex: 1;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  border-right: 1px solid #e0d8c0;
+}
+.profile-stat:last-child { border-right: none; }
+.profile-stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--wine);
+  line-height: 1;
+}
+.profile-stat-val.green { color: var(--green); }
+.profile-stat-val.amber { color: var(--amber); }
+.profile-stat-val.red   { color: #c0392b; }
+.profile-stat-lbl {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-top: 0.2rem;
+}
+
+.profile-body { padding: 1.25rem 1.5rem 1.5rem; }
+
+.profile-section-title {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lake-d);
+  margin: 1.25rem 0 0.6rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #e8dfc8;
+}
+.profile-section-title:first-child { margin-top: 0; }
+
+/* Pontgörbe */
+.score-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 60px;
+  margin-bottom: 0.25rem;
+}
+.score-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  position: relative;
+}
+.score-bar {
+  width: 100%;
+  border-radius: 1px 1px 0 0;
+  min-height: 2px;
+  transition: opacity 0.15s;
+}
+.score-bar.correct  { background: var(--green); }
+.score-bar.correct2 { background: #2ecc71; }
+.score-bar.miss     { background: #e0d8c0; }
+.score-chart-labels {
+  display: flex;
+  gap: 2px;
+  font-size: 0.48rem;
+  color: #bbb;
+  font-family: 'Lato', sans-serif;
+  margin-top: 2px;
+}
+.score-chart-labels span { flex: 1; text-align: center; }
+
+/* Napi lista */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+  gap: 4px;
+}
+.day-dot {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+  cursor: default;
+  position: relative;
+}
+.day-dot.ok     { background: var(--green);  color: white; }
+.day-dot.ok2    { background: #27ae60;        color: white; } /* dupla */
+.day-dot.miss   { background: #e74c3c;        color: white; }
+.day-dot.skip   { background: #e0d8c0;        color: #aaa; }
+.day-dot.future { background: #f0ede4;        color: #ccc; border: 1px dashed #ddd; }
+.day-dot-double { position: absolute; top: -3px; right: -2px; font-size: 0.5rem; }
+
+/* Streak */
+.streak-box {
+  background: #f8f4ec;
+  border-left: 3px solid var(--amber);
+  padding: 0.65rem 1rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.streak-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--amber);
+  line-height: 1;
+}
+.streak-lbl {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Rivális */
+.rival-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0ede4;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.88rem;
+  color: #444;
+}
+.rival-row:last-child { border-bottom: none; }
+.rival-diff {
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+}
+.rival-diff.behind { color: #c0392b; }
+.rival-diff.ahead  { color: var(--green); }
+.rival-diff.same   { color: #aaa; }
+
+/* Fedélzeti adósság */
+.debt-box {
+  background: var(--navy);
+  border: 2px solid var(--sand-d);
+  padding: 1rem 1.25rem;
+  text-align: center;
+}
+.debt-count {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--sand);
+  line-height: 1;
+}
+.debt-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(232,213,163,0.6);
+  margin-top: 0.3rem;
+}
+.debt-zero {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.88rem;
+  color: var(--green-l);
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
 /* ═══ SPOTIFY BUTTON ═══ */
 .spotify-wrap {
   margin-bottom: 1.5rem;
@@ -883,6 +1235,20 @@ footer {
 
 </main>
 
+<!-- ═══ PROFIL MODAL ═══ -->
+<div class="profile-overlay" id="profileOverlay">
+  <div class="profile-card" id="profileCard">
+    <button class="profile-close" onclick="closeProfile()">✕</button>
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">⚓</div>
+      <div class="profile-playername" id="profileName"></div>
+      <div class="profile-rank-badge" id="profileRankBadge"></div>
+    </div>
+    <div class="profile-stats-row" id="profileStatsRow"></div>
+    <div class="profile-body" id="profileBody"></div>
+  </div>
+</div>
+
 <footer>⚓ A Kapitány Hangja · Vitorlás nyaralás kvízjáték · 2026-os szezon ⚓</footer>
 
 <script>
@@ -980,7 +1346,12 @@ function parseCSV(text) {
   });
 }
 
-function todayStr() { return new Date().toISOString().split('T')[0]; }
+// ── DEBUG / SZIMULÁCIÓ ──
+// ?debug=1 URL paraméterrel aktiválható a szimulációs panel
+let _debugTime = null;
+function getNow() { return _debugTime ? new Date(_debugTime) : new Date(); }
+
+function todayStr() { return getNow().toISOString().split('T')[0]; }
 
 // Július 3-án két kérdés van:
 //   09:00-ig (07:00 UTC):  29. kérdés — "Tedd fel a fok kotont!"
@@ -990,13 +1361,13 @@ const QUIZ_DAY2_START = new Date('2026-07-03T07:00:00Z'); // júl. 3. 09:00 CEST
 const GAME_END        = new Date('2026-07-03T08:00:00Z'); // júl. 3. 10:00 CEST
 
 function effectiveToday() {
-  const now = new Date();
+  const now = getNow();
   if (now >= GAME_END)        return '2026-07-04';   // mindkét júl. 3-i kérdés archívumba
   if (now >= QUIZ_DAY2_START) return '2026-07-03-2'; // záróforduló aktív
   return todayStr();
 }
 
-function gameOver() { return new Date() >= GAME_END; }
+function gameOver() { return getNow() >= GAME_END; }
 
 // ── LEADERBOARD ──
 async function loadLB() {
@@ -1051,6 +1422,8 @@ async function loadLB() {
       const qr = await fetch(CONFIG.SHEET_QUESTIONS_URL);
       allQs = parseCSV(await qr.text());
     }
+    _allQuestions = allQs;
+    _allPlayers   = players; // profil számára eltárolva
     const today = effectiveToday();
     allQs.filter(q => (q.date||q['datum']||'') < today).forEach(q => {
       const nemV = q.nem_valaszolt||q['nem_valaszolt']||'';
@@ -1060,26 +1433,89 @@ async function loadLB() {
     });
   } catch(e) {}
 
-  let html = '<table class="lb-table"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th><th class="penalty-th">Büntetőfeles</th></tr></thead><tbody>';
-  players.forEach((p,i) => {
-    const rank = finalRanks[i];
-    const cls = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'';
-    const sym = rank===1 ? '⚓' : rank;
-    const isLast = !allZero && p.score===minScore;
-    const penalties = penaltyMap[p.name] || 0;
-    const scoreStr = Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',');
-    html += `<tr class="${cls}">
-      <td class="rank-num">${sym}</td>
-      <td class="player-nm">${p.name}${isLast && !allZero?`<span class="szobalanya">⚠ ${gameOver()?'Szobalány':'Szobalány jelölt'}</span>`:''}</td>
-      <td class="score-val">${scoreStr}</td>
-      <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
-    </tr>`;
-  });
-  html += '</tbody></table>';
-  if (allZero) html += '<p style="text-align:center;margin-top:1rem;color:#bbb;font-style:italic;font-size:0.85rem">A verseny ma kezdődött — mindenki 0 ponton áll. Első kérdés a Messengerben!</p>';
+  const isOver = gameOver();
 
-  document.getElementById('lb-wrap').innerHTML = html;
-  document.getElementById('lb-updated').textContent = 'Frissítve: ' + new Date().toLocaleString('hu-HU');
+  if (isOver) {
+    // ── VÉGEREDMÉNY NÉZET ──
+    const scoreStr = p => Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',');
+    const p1 = players[0], p2 = players[1], p3 = players[2];
+    const last = players[players.length - 1];
+
+    let html = `<div class="final-banner">🏁 Végeredmény — A kvízjáték lezárult</div>`;
+
+    // Dobogó (2. – 1. – 3. sorrend vizuálisan)
+    html += `<div class="podium-wrap">`;
+    if (p2) html += `<div class="podium-slot podium-2">
+      <div class="podium-name"><span class="player-link" onclick="openProfile('${p2.name.replace(/'/g,"\\'")}')">${p2.name}</span></div>
+      <div class="podium-score">${scoreStr(p2)}</div>
+      <div class="podium-block p2-block"><span class="podium-rank">2</span></div>
+    </div>`;
+    if (p1) html += `<div class="podium-slot podium-1">
+      <div class="podium-crown">⚓</div>
+      <div class="podium-name p1-name"><span class="player-link" onclick="openProfile('${p1.name.replace(/'/g,"\\'")}')">${p1.name}</span></div>
+      <div class="podium-score p1-score">${scoreStr(p1)}</div>
+      <div class="podium-block p1-block"><span class="podium-rank">1</span></div>
+    </div>`;
+    if (p3) html += `<div class="podium-slot podium-3">
+      <div class="podium-name"><span class="player-link" onclick="openProfile('${p3.name.replace(/'/g,"\\'")}')">${p3.name}</span></div>
+      <div class="podium-score">${scoreStr(p3)}</div>
+      <div class="podium-block p3-block"><span class="podium-rank">3</span></div>
+    </div>`;
+    html += `</div>`;
+
+    // Teljes táblázat (4. helytől)
+    if (players.length > 3) {
+      html += `<table class="lb-table" style="margin-top:1rem"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th><th class="penalty-th">Büntetőfeles</th></tr></thead><tbody>`;
+      players.slice(3).forEach((p,i) => {
+        const rank = finalRanks[i+3];
+        const penalties = penaltyMap[p.name] || 0;
+        html += `<tr>
+          <td class="rank-num">${rank}</td>
+          <td class="player-nm"><span class="player-link" onclick="openProfile('${p.name.replace(/'/g,"\\'")}')">${p.name}</span></td>
+          <td class="score-val">${scoreStr(p)}</td>
+          <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+    }
+
+    // Szobalány kiemelés
+    if (last) {
+      const lastPenalties = penaltyMap[last.name] || 0;
+      html += `<div class="szobalany-final">
+        <div class="szobalany-icon">🧹</div>
+        <div class="szobalany-title">A hajó szobalánya</div>
+        <div class="szobalany-name">${last.name}</div>
+        <div class="szobalany-detail">${scoreStr(last)} pont${lastPenalties > 0 ? ` · ${lastPenalties} büntetőfeles` : ''}</div>
+      </div>`;
+    }
+
+    document.getElementById('lb-wrap').innerHTML = html;
+    document.getElementById('lb-updated').textContent = 'Végeredmény · 2026. július 3.';
+
+  } else {
+    // ── NORMÁL NÉZET ──
+    let html = '<table class="lb-table"><thead><tr><th></th><th>Matróz</th><th style="text-align:right">Pont</th><th class="penalty-th">Büntetőfeles</th></tr></thead><tbody>';
+    players.forEach((p,i) => {
+      const rank = finalRanks[i];
+      const cls = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'';
+      const sym = rank===1 ? '⚓' : rank;
+      const isLast = !allZero && p.score===minScore;
+      const penalties = penaltyMap[p.name] || 0;
+      const scoreStr = Number.isInteger(p.score) ? p.score : p.score.toString().replace('.',',');
+      html += `<tr class="${cls}">
+        <td class="rank-num">${sym}</td>
+        <td class="player-nm"><span class="player-link" onclick="openProfile('${p.name.replace(/'/g,"\\'")}')">${p.name}</span>${isLast && !allZero?`<span class="szobalanya">⚠ Szobalány jelölt</span>`:''}</td>
+        <td class="score-val">${scoreStr}</td>
+        <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    if (allZero) html += '<p style="text-align:center;margin-top:1rem;color:#bbb;font-style:italic;font-size:0.85rem">A verseny ma kezdődött — mindenki 0 ponton áll. Első kérdés a Messengerben!</p>';
+
+    document.getElementById('lb-wrap').innerHTML = html;
+    document.getElementById('lb-updated').textContent = 'Frissítve: ' + new Date().toLocaleString('hu-HU');
+  }
 }
 
 // ── DAILY ──
@@ -1108,7 +1544,8 @@ async function loadDaily() {
   const audioFile = (demoMatch && demoMatch.audioFile) || q.audioFile||q['Hangfájl']||q['hangfajl']||'';
   const qData = { date: qDate, question: q.question||q['Kérdés']||q['kerdes']||'', correct_players: q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'', double: (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true', audioFile };
   const dayNum = qs.indexOf(q)+1;
-  const dateStr = new Date(qData.date+'T12:00:00').toLocaleDateString('hu-HU',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  const rawDate = qData.date.replace(/-\d+$/, (m) => m === '-2' ? '' : m); // "2026-07-03-2" → "2026-07-03"
+  const dateStr = new Date(rawDate+'T12:00:00').toLocaleDateString('hu-HU',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
 
   el.innerHTML = `<div class="q-card">
     <div class="q-card-top">
@@ -1209,11 +1646,172 @@ async function loadArchive() {
 
 window.tog = id => document.getElementById(id).classList.toggle('open');
 
+// ── PROFIL ──
+let _allPlayers = [];  // feltöltve a loadLB végén
+let _allQuestions = [];
+
+// Overlay bezárás háttérre kattintva
+document.getElementById('profileOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('profileOverlay')) closeProfile();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProfile(); });
+
+window.closeProfile = () => {
+  document.getElementById('profileOverlay').classList.remove('open');
+};
+
+window.openProfile = (playerName) => {
+  const player = _allPlayers.find(p => p.name === playerName);
+  if (!player) return;
+
+  const overlay = document.getElementById('profileOverlay');
+  const qs = _allQuestions;
+  const today = effectiveToday();
+
+  // Múltbeli kérdések (lezártak)
+  const past = qs.filter(q => (q.date||q['Dátum']||q['datum']||'') < today);
+
+  // Napokhoz státusz
+  const dayData = past.map(q => {
+    const date   = q.date||q['Dátum']||q['datum']||'';
+    const correct = (q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'')
+                     .split(',').map(n => n.trim());
+    const missed  = (q.nem_valaszolt||q['Nem válaszolt']||q['nem_valaszolt']||'')
+                     .split(',').map(n => n.trim());
+    const dbl     = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
+    const isOk    = correct.includes(playerName);
+    const isMiss  = missed.includes(playerName);
+    const pts     = isOk ? (dbl ? 2 : 1) : 0;
+    return { date, isOk, isMiss, dbl, pts };
+  });
+
+  const correctCount = dayData.filter(d => d.isOk).length;
+  const missCount    = dayData.filter(d => d.isMiss).length;
+  const totalPts     = dayData.reduce((s, d) => s + d.pts, 0);
+  const dblOk        = dayData.filter(d => d.dbl && d.isOk).length;
+  const dblTotal     = dayData.filter(d => d.dbl).length;
+
+  // Leghosszabb helyes sorozat
+  let streak = 0, maxStreak = 0, cur = 0;
+  dayData.forEach(d => {
+    if (d.isOk) { cur++; maxStreak = Math.max(maxStreak, cur); }
+    else { cur = 0; }
+  });
+
+  // Rivális adatok
+  const sorted = [..._allPlayers].sort((a,b) => b.score - a.score);
+  const myRank = sorted.findIndex(p => p.name === playerName) + 1;
+  const leader = sorted[0];
+  const last   = sorted[sorted.length - 1];
+  const diffFromLeader = leader.score - player.score;
+  const diffFromLast   = player.score - last.score;
+
+  // Fejléc
+  document.getElementById('profileAvatar').textContent = '⚓';
+  document.getElementById('profileName').textContent = playerName;
+  const rankLabel = myRank === 1 ? '⚓ 1. helyezett' : `${myRank}. helyezett · ${totalPts} pont`;
+  document.getElementById('profileRankBadge').textContent = rankLabel;
+
+  // Stat sor
+  document.getElementById('profileStatsRow').innerHTML = `
+    <div class="profile-stat">
+      <div class="profile-stat-val green">${correctCount}</div>
+      <div class="profile-stat-lbl">Helyes válasz</div>
+    </div>
+    <div class="profile-stat">
+      <div class="profile-stat-val red">${missCount}</div>
+      <div class="profile-stat-lbl">Büntetőfeles</div>
+    </div>
+    <div class="profile-stat">
+      <div class="profile-stat-val amber">${maxStreak}</div>
+      <div class="profile-stat-lbl">Legjobb sorozat</div>
+    </div>
+    <div class="profile-stat">
+      <div class="profile-stat-val">${dblTotal > 0 ? dblOk+'/'+dblTotal : '—'}</div>
+      <div class="profile-stat-lbl">Dupla nap ⚡</div>
+    </div>`;
+
+  // Body
+  let body = '';
+
+  // Pontgörbe
+  if (dayData.length > 0) {
+    const maxPts = Math.max(...dayData.map(d => d.pts), 1);
+    body += `<div class="profile-section-title">Pontgörbe</div>
+    <div class="score-chart">`;
+    dayData.forEach((d, i) => {
+      const h = d.pts > 0 ? Math.max(8, Math.round((d.pts / (dblTotal > 0 ? 2 : 1)) * 60)) : 4;
+      const cls = d.pts === 0 ? 'miss' : d.dbl ? 'correct2' : 'correct';
+      body += `<div class="score-bar-wrap"><div class="score-bar ${cls}" style="height:${h}px" title="${i+1}. nap: ${d.pts} pont"></div></div>`;
+    });
+    body += `</div>
+    <div class="score-chart-labels">`;
+    dayData.forEach((d, i) => {
+      body += `<span>${i+1}</span>`;
+    });
+    body += `</div>`;
+  }
+
+  // Napi rácsozat
+  body += `<div class="profile-section-title">Napi eredmények</div>
+  <div class="day-grid">`;
+  dayData.forEach((d, i) => {
+    let cls = d.isOk ? (d.dbl ? 'ok2' : 'ok') : d.isMiss ? 'miss' : 'skip';
+    let icon = d.isOk ? '✓' : d.isMiss ? '✗' : '·';
+    let title = `${i+1}. nap`;
+    body += `<div class="day-dot ${cls}" title="${title}${d.dbl?' ⚡':''}">${icon}${d.dbl?'<span class="day-dot-double">⚡</span>':''}</div>`;
+  });
+  body += `</div>
+  <div style="margin-top:0.5rem;font-size:0.7rem;color:#aaa;font-family:'Lato',sans-serif">
+    <span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="display:inline-block;width:10px;height:10px;background:var(--green);border-radius:1px"></span>Helyes</span>
+    <span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="display:inline-block;width:10px;height:10px;background:#27ae60;border-radius:1px"></span>Helyes (dupla)</span>
+    <span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="display:inline-block;width:10px;height:10px;background:#e74c3c;border-radius:1px"></span>Büntetőfeles</span>
+    <span style="display:inline-flex;align-items:center;gap:4px"><span style="display:inline-block;width:10px;height:10px;background:#e0d8c0;border-radius:1px"></span>Nem válaszolt</span>
+  </div>`;
+
+  // Rivális összehasonlítás
+  body += `<div class="profile-section-title">Rivális összehasonlítás</div>`;
+  if (myRank === 1) {
+    body += `<div class="rival-row"><span>🥇 Te vezeted a tabellát</span><span class="rival-diff same">—</span></div>`;
+  } else {
+    body += `<div class="rival-row">
+      <span>Lemaradás <strong>${leader.name}</strong>-tól (1.)</span>
+      <span class="rival-diff behind">−${diffFromLeader.toString().replace('.',',')} pont</span>
+    </div>`;
+  }
+  if (myRank < sorted.length) {
+    body += `<div class="rival-row">
+      <span>Előny <strong>${last.name}</strong>-hoz képest (utolsó)</span>
+      <span class="rival-diff ahead">+${diffFromLast.toString().replace('.',',')} pont</span>
+    </div>`;
+  }
+  if (myRank > 1 && myRank < sorted.length) {
+    const prev = sorted[myRank - 2];
+    const diffPrev = prev.score - player.score;
+    body += `<div class="rival-row">
+      <span>Lemaradás <strong>${prev.name}</strong>-tól (${myRank-1}.)</span>
+      <span class="rival-diff behind">−${diffPrev.toString().replace('.',',')} pont</span>
+    </div>`;
+  }
+
+  // Fedélzeti adósság
+  body += `<div class="profile-section-title">Fedélzeti adósság</div>
+  <div class="debt-box">
+    <div class="debt-count">${missCount}</div>
+    <div class="debt-label">${missCount === 1 ? 'büntetőfeles vár rád' : 'büntetőfeles vár rád'} a fedélzeten 🥃</div>
+    ${missCount === 0 ? '<div class="debt-zero">Rendben vagy! Nem köszönheted meg.</div>' : ''}
+  </div>`;
+
+  document.getElementById('profileBody').innerHTML = body;
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+};
+
 // ── COUNTDOWN ──
 function updateCountdown() {
   // 2026-07-03 09:00:00 CEST (UTC+2)
   const target = new Date('2026-07-03T07:00:00Z');
-  const now = new Date();
+  const now = getNow();
   const diff = target - now;
   const el = document.getElementById('countdown');
   if (!el) return;
