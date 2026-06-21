@@ -958,6 +958,118 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
 .res-ok .q-list-pts, .res-ok2 .q-list-pts   { color: var(--green); }
 .res-half .q-list-pts, .res-half2 .q-list-pts { color: var(--amber); }
 
+/* Szint + streak sor */
+.level-streak-row {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e0d8c0;
+}
+.level-block {
+  flex: 1;
+  padding: 1rem 1.25rem;
+  border-right: 1px solid #e0d8c0;
+}
+.streak-block {
+  width: 110px;
+  flex-shrink: 0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fdf8ef;
+}
+.level-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 0.2rem;
+}
+.level-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--wine);
+  margin-bottom: 0.5rem;
+}
+.level-bar-bg {
+  height: 6px;
+  background: #e0d8c0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+.level-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.level-bar-lbl {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.68rem;
+  color: #aaa;
+}
+.streak-fire { font-size: 1.8rem; line-height: 1; margin-bottom: 0.1rem; }
+.streak-num-big {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1;
+}
+.streak-lbl-small {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-top: 0.15rem;
+  text-align: center;
+}
+
+/* Achievementek */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.ach-badge {
+  border: 1px solid #e0d8c0;
+  border-radius: 2px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: white;
+}
+.ach-badge.earned {
+  border-color: var(--sand-d);
+  background: #fdf8ef;
+}
+.ach-badge.locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+.ach-icon { font-size: 1.3rem; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+.ach-name {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.73rem;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.ach-desc {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.62rem;
+  color: #aaa;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
 /* Streak */
 .streak-box {
   background: #f8f4ec;
@@ -1302,6 +1414,7 @@ footer {
       <div class="profile-rank-badge" id="profileRankBadge"></div>
     </div>
     <div class="profile-stats-row" id="profileStatsRow"></div>
+    <div id="profileLevelRow"></div>
     <div class="profile-body" id="profileBody"></div>
   </div>
 </div>
@@ -1679,6 +1792,7 @@ async function loadArchive() {
     const date       = q.date||q['Dátum']||q['datum']||'';
     const quest      = q.question||q['Kérdés']||q['kerdes']||'—';
     const players    = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'';
+    const feligen    = q.feligen_valaszolt||q['Félig helyesen válaszolt']||'';
     const nemValasz  = q.nem_valaszolt||q['Nem válaszolt']||'';
     const dbl        = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
     const dayN  = qs.indexOf(q)+1;
@@ -1694,6 +1808,8 @@ async function loadArchive() {
         <div class="arch-val">${quest}</div>
         <div class="arch-label">Ki válaszolt helyesen</div>
         <div class="arch-val">${players || '<em style="color:#bbb">—</em>'}</div>
+        ${feligen ? `<div class="arch-label" style="color:var(--amber)">Félig helyes válasz (½ pont)</div>
+        <div class="arch-val" style="color:var(--amber)">${feligen}</div>` : ''}
         ${nemValasz ? `<div class="arch-label" style="color:#a06010">Nem válaszolt — büntetőfeles</div>
         <div class="arch-val" style="color:#a06010">${nemValasz}</div>` : ''}
       </div>
@@ -1733,15 +1849,15 @@ window.openProfile = (playerName) => {
     const date     = q.date||q['Dátum']||q['datum']||'';
     const question = q.question||q['Kérdés']||q['kerdes']||'';
     const rawCorrect = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'';
+    const rawHalf    = q.feligen_valaszolt||q['Félig helyesen válaszolt']||q['feligen_valaszolt']||'';
     const missed   = (q.nem_valaszolt||q['Nem válaszolt']||q['nem_valaszolt']||'')
                       .split(',').map(n => n.trim()).filter(Boolean);
     const dbl      = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
 
-    // Teljes helyes: névként szerepel (de nem +félig verzióban)
     const correctList = rawCorrect.split(',').map(n => n.trim()).filter(Boolean);
-    const halfName    = playerName + '+félig';
-    const isHalf      = correctList.some(n => n.toLowerCase() === halfName.toLowerCase());
-    const isOk        = !isHalf && correctList.some(n => n.toLowerCase() === playerName.toLowerCase());
+    const halfList    = rawHalf.split(',').map(n => n.trim()).filter(Boolean);
+    const isOk   = correctList.some(n => n.toLowerCase() === playerName.toLowerCase());
+    const isHalf = !isOk && halfList.some(n => n.toLowerCase() === playerName.toLowerCase());
     const isMiss      = missed.some(n => n.toLowerCase() === playerName.toLowerCase());
 
     // Pontszám: teljes=1 (dupla=2), félig=0.5 (dupla=1)
@@ -1775,8 +1891,50 @@ window.openProfile = (playerName) => {
 
   const fmtPt = v => Number.isInteger(v) ? String(v) : v.toString().replace('.',',');
 
+  // ── Szint számítás (pontossági % alapján) ──
+  const accuracy = past.length > 0
+    ? (dayData.filter(d => d.isOk || d.isHalf).length / past.length) * 100 : 0;
+const LEVELS2 = [
+    { name: 'Szobalány',      icon: '🧹', min: 0,  max: 25,  color: '#c0392b' },
+    { name: 'Matróz',         icon: '⚓', min: 25, max: 50,  color: '#1e8abf' },
+    { name: 'Navigátor',      icon: '🧭', min: 50, max: 75,  color: '#2980b9' },
+    { name: 'Fedélzetmester', icon: '⛵', min: 75, max: 101, color: '#27ae60' },
+  ];
+  const lvl = LEVELS2.find(l => accuracy >= l.min && accuracy < l.max) || LEVELS2[LEVELS2.length-1];
+  const nextLvl = LEVELS2[LEVELS2.indexOf(lvl)+1];
+  const lvlProgress = nextLvl
+    ? Math.round(((accuracy - lvl.min) / (nextLvl.min - lvl.min)) * 100)
+    : 100;
+
+  // ── Jelenlegi sorozat (legutóbbi napokból visszafelé) ──
+  let curStreak = 0;
+  for (let i = dayData.length - 1; i >= 0; i--) {
+    if (dayData[i].isOk || dayData[i].isHalf) curStreak++;
+    else break;
+  }
+
+  // ── Achievementek ──
+  const ACHIEVEMENTS = [
+    { icon: '⚓', name: 'Horgony felszedve', desc: 'Első helyes válasz',
+      earned: dayData.some(d => d.isOk || d.isHalf) },
+    { icon: '🌬️', name: 'Jó szél', desc: '3 egymást követő helyes',
+      earned: maxStreak >= 3 },
+    { icon: '🔥', name: 'Szélroham', desc: '5 egymást követő helyes',
+      earned: maxStreak >= 5 },
+    { icon: '⚡', name: 'Dupla diadal', desc: 'Dupla napon helyes válasz',
+      earned: dayData.some(d => d.dbl && (d.isOk || d.isHalf)) },
+    { icon: '🧭', name: 'Iránytű', desc: '10+ helyes válasz',
+      earned: (fullCount + halfCount) >= 10 },
+    { icon: '🌊', name: 'Büntetésmentes', desc: 'Egyetlen büntetőfeles sem',
+      earned: missCount === 0 },
+    { icon: '⛵', name: 'Teljes vitorla', desc: '20+ helyes válasz',
+      earned: (fullCount + halfCount) >= 20 },
+    { icon: '🏆', name: 'Kapitány kedvence', desc: '1. helyezett a tabellán',
+      earned: myRank === 1 },
+  ];
+
   // Fejléc
-  document.getElementById('profileAvatar').textContent = '⚓';
+  document.getElementById('profileAvatar').textContent = lvl.icon;
   document.getElementById('profileName').textContent = playerName;
   const rankLabel = myRank === 1 ? '⚓ 1. helyezett' : `${myRank}. helyezett · ${fmtPt(player.score)} pont`;
   document.getElementById('profileRankBadge').textContent = rankLabel;
@@ -1803,7 +1961,33 @@ window.openProfile = (playerName) => {
       <div class="profile-stat-lbl">Dupla nap ⚡</div>
     </div>`;
 
+  // ── Szint + jelenlegi sorozat ──
+  const streakColor = curStreak >= 3 ? '#e67e22' : '#aaa';
+  document.getElementById('profileLevelRow').innerHTML = `<div class="level-streak-row">
+    <div class="level-block">
+      <div class="level-label">Szint</div>
+      <div class="level-name">${lvl.icon} ${lvl.name}</div>
+      <div class="level-bar-bg"><div class="level-bar-fill" style="width:${lvlProgress}%;background:${lvl.color}"></div></div>
+      <div class="level-bar-lbl">${nextLvl ? `${Math.round(accuracy)}% pontosság · következő: ${nextLvl.name}` : `${Math.round(accuracy)}% · maximum szint! ⛵`}</div>
+    </div>
+    <div class="streak-block">
+      <div class="streak-fire">${curStreak >= 3 ? '🔥' : curStreak >= 1 ? '✨' : '💤'}</div>
+      <div class="streak-num-big" style="color:${streakColor}">${curStreak}</div>
+      <div class="streak-lbl-small">jelenlegi<br>sorozat</div>
+    </div>
+  </div>`;
+
   let body = '';
+
+  // ── Achievementek ──
+  body += `<div class="profile-section-title">Kitűzők</div><div class="ach-grid">`;
+  ACHIEVEMENTS.forEach(a => {
+    body += `<div class="ach-badge ${a.earned ? 'earned' : 'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>
+    </div>`;
+  });
+  body += `</div>`;
 
   // ── Pontgörbe ──
   if (dayData.length > 0) {
