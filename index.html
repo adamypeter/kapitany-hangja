@@ -1841,11 +1841,19 @@ window.openProfile = (playerName) => {
   const qs = _allQuestions;
   const today = effectiveToday();
 
-  // Múltbeli kérdések (lezártak)
+  // Múltbeli kérdések (lezártak) — archívumhoz és rivális összehasonlításhoz
   const past = qs.filter(q => (q.date||q['Dátum']||q['datum']||'') < today);
 
+  // Kiértékelt kérdések: ahol már van adat a sheetben (akár mai is, ha már beírták)
+  const scored = qs.filter(q => {
+    const c = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'';
+    const h = q.feligen_valaszolt||q['Félig helyesen válaszolt']||q['feligen_valaszolt']||'';
+    const n = q.nem_valaszolt||q['Nem válaszolt']||q['nem_valaszolt']||'';
+    return c || h || n;
+  });
+
   // Napokhoz státusz — +félig kezelésével
-  const dayData = past.map((q, idx) => {
+  const dayData = scored.map((q, idx) => {
     const date     = q.date||q['Dátum']||q['datum']||'';
     const question = q.question||q['Kérdés']||q['kerdes']||'';
     const rawCorrect = q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'';
@@ -1891,16 +1899,23 @@ window.openProfile = (playerName) => {
 
   const fmtPt = v => Number.isInteger(v) ? String(v) : v.toString().replace('.',',');
 
-  // ── Szint számítás (pontossági % alapján) ──
-  const accuracy = past.length > 0
-    ? (dayData.filter(d => d.isOk || d.isHalf).length / past.length) * 100 : 0;
+  // ── Szint számítás ──
+  // Net pontszám: helyes + fél*0.5 - büntetőfeles*0.5 (min 0)
+  const netScore = Math.max(0, fullCount + halfCount * 0.5 - missCount * 0.5);
+  const accuracy = scored.length > 0 ? (netScore / scored.length) * 100 : 0;
+
+  // Az utolsó helyezett mindig Szobalány
+  const allZeroScores = _allPlayers.every(p => p.score === 0);
+  const minPlayerScore = _allPlayers.length ? Math.min(..._allPlayers.map(p => p.score)) : 0;
+  const isLastPlace = !allZeroScores && player.score === minPlayerScore;
+
 const LEVELS2 = [
-    { name: 'Szobalány',      icon: '🧹', min: 0,  max: 25,  color: '#c0392b' },
-    { name: 'Matróz',         icon: '⚓', min: 25, max: 50,  color: '#1e8abf' },
-    { name: 'Navigátor',      icon: '🧭', min: 50, max: 75,  color: '#2980b9' },
-    { name: 'Fedélzetmester', icon: '⛵', min: 75, max: 101, color: '#27ae60' },
+    { name: 'Szobalány',      icon: '🧹', min: 0,  max: 40,  color: '#c0392b' },
+    { name: 'Matróz',         icon: '⚓', min: 40, max: 60,  color: '#1e8abf' },
+    { name: 'Navigátor',      icon: '🧭', min: 60, max: 80,  color: '#2980b9' },
+    { name: 'Fedélzetmester', icon: '⛵', min: 80, max: 101, color: '#27ae60' },
   ];
-  const lvl = LEVELS2.find(l => accuracy >= l.min && accuracy < l.max) || LEVELS2[LEVELS2.length-1];
+  const lvl = isLastPlace ? LEVELS2[0] : (LEVELS2.find(l => accuracy >= l.min && accuracy < l.max) || LEVELS2[LEVELS2.length-1]);
   const nextLvl = LEVELS2[LEVELS2.indexOf(lvl)+1];
   const lvlProgress = nextLvl
     ? Math.round(((accuracy - lvl.min) / (nextLvl.min - lvl.min)) * 100)
