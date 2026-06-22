@@ -460,6 +460,81 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   margin-top: 0.5rem;
 }
 
+/* Kapitány videó hero lejátszó */
+.kapitany-video-hero {
+  width: 100%;
+  max-width: 480px;
+  margin: 1.2rem auto 0;
+}
+.kapitany-video-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a1e2d;
+  box-shadow: 0 8px 32px rgba(10,30,45,0.35);
+  cursor: pointer;
+}
+.kapitany-video-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.kapitany-video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.18);
+  transition: opacity 0.2s;
+}
+.kapitany-video-overlay.hidden { opacity: 0; pointer-events: none; }
+.kapitany-play-btn {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.15s, background 0.15s;
+  font-size: 1.6rem;
+  padding-left: 4px;
+}
+.kapitany-play-btn:hover { transform: scale(1.08); background: #fff; }
+.kapitany-video-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 0 2px;
+}
+.kapitany-progress-wrap {
+  flex: 1;
+  height: 5px;
+  background: #d4c9b0;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.kapitany-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--navy);
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+.kapitany-time {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  color: var(--navy);
+  min-width: 36px;
+  text-align: right;
+}
+
 /* Kapitány talking avatar */
 .kapitany-avatar-wrap {
   position: relative;
@@ -1517,19 +1592,19 @@ const DEMO_QUESTIONS = [
   { date:'2026-06-19', question:'Vedd le a fokkotont!',                      correct_players:'', double:false, audioFile:'audio/15.m4a' },
   { date:'2026-06-20', question:'Vedd le a grószkotont!',                    correct_players:'', double:false, audioFile:'audio/16.m4a' },
   { date:'2026-06-21', question:'Tegyétek el a lézidzseket!',                correct_players:'', double:true,  audioFile:'audio/17.m4a' },
-  { date:'2026-06-22', question:'Kösd be a grószfalat!',                     correct_players:'', double:false, audioFile:'audio/18.m4a' },
-  { date:'2026-06-23', question:'Húzz utána a grószfalnak!',                 correct_players:'', double:false, audioFile:'audio/19.m4a' },
-  { date:'2026-06-24', question:'Ülj lébe!',                                 correct_players:'', double:false, audioFile:'audio/20.m4a' },
-  { date:'2026-06-25', question:'Ülj ki!',                                   correct_players:'', double:false, audioFile:'audio/21.m4a' },
-  { date:'2026-06-26', question:'Engedj a fokra!',                           correct_players:'', double:false, audioFile:'audio/22.m4a' },
-  { date:'2026-06-27', question:'Húzd meg az albát!',                        correct_players:'', double:true,  audioFile:'audio/23.m4a' },
-  { date:'2026-06-28', question:'Forduláshoz felkészülni!',                  correct_players:'', double:false, audioFile:'audio/24.m4a' },
-  { date:'2026-06-29', question:'Nézz a szálingra!',                         correct_players:'', double:true,  audioFile:'audio/25.m4a' },
-  { date:'2026-06-30', question:'Húzz a beksztégre!',                        correct_players:'', double:false, audioFile:'audio/26.m4a' },
-  { date:'2026-07-01', question:'Szedjük le a grószt!',                      correct_players:'', double:false, audioFile:'audio/27.m4a' },
-  { date:'2026-07-02', question:'Te hajtogatott elől!',                      correct_players:'', double:false, audioFile:'audio/28.m4a' },
-  { date:'2026-07-03',   question:'Tedd fel a fok kotont!',  correct_players:'', double:false, audioFile:'audio/29.m4a' },
-  { date:'2026-07-03-2', question:'Emeld fel a trepnit!',   correct_players:'', double:true,  audioFile:'audio/30.m4a' },
+  { date:'2026-06-22', question:'Kösd be a grószfalat!',                     correct_players:'', double:false, audioFile:'audio/18.m4a', videoFile:'video/files/18.mp4' },
+  { date:'2026-06-23', question:'Húzz utána a grószfalnak!',                 correct_players:'', double:false, audioFile:'audio/19.m4a', videoFile:'video/files/19.mp4' },
+  { date:'2026-06-24', question:'Ülj lébe!',                                 correct_players:'', double:false, audioFile:'audio/20.m4a', videoFile:'video/files/20.mp4' },
+  { date:'2026-06-25', question:'Ülj ki!',                                   correct_players:'', double:false, audioFile:'audio/21.m4a', videoFile:'video/files/21-11.mp4' },
+  { date:'2026-06-26', question:'Engedj a fokra!',                           correct_players:'', double:false, audioFile:'audio/22.m4a', videoFile:'video/files/22-8.mp4' },
+  { date:'2026-06-27', question:'Húzd meg az albát!',                        correct_players:'', double:true,  audioFile:'audio/23.m4a', videoFile:'video/files/23-7.mp4' },
+  { date:'2026-06-28', question:'Forduláshoz felkészülni!',                  correct_players:'', double:false, audioFile:'audio/24.m4a', videoFile:'video/files/24-6.mp4' },
+  { date:'2026-06-29', question:'Nézz a szálingra!',                         correct_players:'', double:true,  audioFile:'audio/25.m4a', videoFile:'video/files/25-3.mp4' },
+  { date:'2026-06-30', question:'Húzz a beksztégre!',                        correct_players:'', double:false, audioFile:'audio/26.m4a', videoFile:'video/files/26-4.mp4' },
+  { date:'2026-07-01', question:'Szedjük le a grószt!',                      correct_players:'', double:false, audioFile:'audio/27.m4a', videoFile:'video/files/27-5.mp4' },
+  { date:'2026-07-02', question:'Te hajtogatott elől!',                      correct_players:'', double:false, audioFile:'audio/28.m4a', videoFile:'video/files/28-2.mp4' },
+  { date:'2026-07-03',   question:'Tedd fel a fok kotont!',  correct_players:'', double:false, audioFile:'audio/29.m4a', videoFile:'video/files/29-1.mp4' },
+  { date:'2026-07-03-2', question:'Emeld fel a trepnit!',   correct_players:'', double:true,  audioFile:'audio/30.m4a', videoFile:'video/files/30-0.mp4' },
 ];
 
 // ── NAV ──
@@ -1794,7 +1869,8 @@ async function loadDaily() {
   // Always use DEMO_QUESTIONS audioFile — sheet may have outdated filenames
   const demoMatch = DEMO_QUESTIONS.find(x => x.date === qDate);
   const audioFile = (demoMatch && demoMatch.audioFile) || q.audioFile||q['Hangfájl']||q['hangfajl']||'';
-  const qData = { date: qDate, question: q.question||q['Kérdés']||q['kerdes']||'', correct_players: q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'', double: (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true', audioFile };
+  const videoFile = (demoMatch && demoMatch.videoFile) || '';
+  const qData = { date: qDate, question: q.question||q['Kérdés']||q['kerdes']||'', correct_players: q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'', double: (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true', audioFile, videoFile };
   const dayNum = qs.indexOf(q)+1;
   const rawDate = qData.date.replace(/-\d+$/, (m) => m === '-2' ? '' : m); // "2026-07-03-2" → "2026-07-03"
   const dateStr = new Date(rawDate+'T12:00:00').toLocaleDateString('hu-HU',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
@@ -1807,12 +1883,30 @@ async function loadDaily() {
     <div class="q-card-body">
       <div class="q-number-bg">${dayNum}</div>
       <div class="q-text">${qData.audioFile ? '🔊 Hallgasd meg a kapitány hangját! Mit kell csinálnod ebben az esetben?' : qData.question}</div>
-      ${qData.audioFile ? buildPlayer(qData.audioFile) : ''}
+      ${qData.videoFile ? buildVideoPlayer(qData.videoFile) : qData.audioFile ? buildPlayer(qData.audioFile) : ''}
       <p class="q-hint">🎤 Tippjeidet <strong>Adámy Péternek</strong> add le Messengeren! Majd az eredmény után küldd be a csoportba — egy igazi roast show-ra!</p>
     </div>
   </div>`;
 
-  if (qData.audioFile) initPlayer(qData.audioFile);
+  if (qData.videoFile) initVideoPlayer();
+  else if (qData.audioFile) initPlayer(qData.audioFile);
+}
+
+function buildVideoPlayer(src) {
+  return `<div class="kapitany-video-hero">
+    <div class="kapitany-video-stage" onclick="toggleVideo()">
+      <video id="vEl" src="${encodeURI(src)}" playsinline preload="metadata"></video>
+      <div class="kapitany-video-overlay" id="vOverlay">
+        <button class="kapitany-play-btn" id="pBtn">▶</button>
+      </div>
+    </div>
+    <div class="kapitany-video-bar">
+      <div class="kapitany-progress-wrap" id="vProgressWrap">
+        <div class="kapitany-progress-fill" id="vProgress"></div>
+      </div>
+      <div class="kapitany-time" id="aTime">0:00</div>
+    </div>
+  </div>`;
 }
 
 function buildPlayer(src) {
@@ -1828,6 +1922,32 @@ function buildPlayer(src) {
     </div>
     <audio id="aEl" src="${encodeURI(src)}" type="audio/mp4"></audio>
   </div>`;
+}
+
+function initVideoPlayer() {
+  const v = document.getElementById('vEl');
+  if (!v) return;
+  v.addEventListener('timeupdate', () => {
+    const p = v.currentTime / (v.duration || 1);
+    const fill = document.getElementById('vProgress');
+    if (fill) fill.style.width = (p * 100) + '%';
+    const m = Math.floor(v.currentTime/60), s = Math.floor(v.currentTime%60).toString().padStart(2,'0');
+    const t = document.getElementById('aTime');
+    if (t) t.textContent = m + ':' + s;
+  });
+  v.addEventListener('ended', () => {
+    const overlay = document.getElementById('vOverlay');
+    const btn = document.getElementById('pBtn');
+    if (overlay) overlay.classList.remove('hidden');
+    if (btn) btn.textContent = '▶';
+  });
+  // kattintható progress bar
+  const pw = document.getElementById('vProgressWrap');
+  if (pw) pw.addEventListener('click', e => {
+    e.stopPropagation();
+    const r = pw.getBoundingClientRect();
+    v.currentTime = ((e.clientX - r.left) / r.width) * (v.duration || 0);
+  });
 }
 
 function initPlayer(src) {
@@ -1884,6 +2004,22 @@ window.toggleAudio = () => {
     a.pause();
     b.textContent = '▶';
     stopMouthAnim();
+  }
+};
+
+window.toggleVideo = () => {
+  const v = document.getElementById('vEl');
+  const btn = document.getElementById('pBtn');
+  const overlay = document.getElementById('vOverlay');
+  if (!v) return;
+  if (v.paused) {
+    v.play();
+    if (btn) btn.textContent = '⏸';
+    if (overlay) overlay.classList.add('hidden');
+  } else {
+    v.pause();
+    if (btn) btn.textContent = '▶';
+    if (overlay) overlay.classList.remove('hidden');
   }
 };
 
