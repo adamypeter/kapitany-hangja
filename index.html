@@ -460,6 +460,21 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   margin-top: 0.5rem;
 }
 
+/* Kapitány talking avatar */
+.kapitany-avatar-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 1rem;
+  filter: drop-shadow(0 4px 18px rgba(10,30,45,0.22));
+}
+.kapitany-avatar-img {
+  width: 100%; height: 100%;
+  display: block;
+  border-radius: 50%;
+  border: 3px solid var(--sand-d);
+}
+
 .audio-label {
   font-family: 'Lato', sans-serif;
   font-weight: 700;
@@ -1802,6 +1817,9 @@ async function loadDaily() {
 
 function buildPlayer(src) {
   return `<div class="audio-wrap">
+    <div class="kapitany-avatar-wrap">
+      <img class="kapitany-avatar-img" id="kapitanyImg" src="kapitany_avatar.png" alt="A Kapitány">
+    </div>
     <div class="audio-label">▶ Kapitány hangüzenete</div>
     <div class="player-row">
       <button class="play-btn" id="pBtn" onclick="toggleAudio()">▶</button>
@@ -1829,13 +1847,44 @@ function initPlayer(src) {
     const m=Math.floor(a.currentTime/60), s=Math.floor(a.currentTime%60).toString().padStart(2,'0');
     document.getElementById('aTime').textContent=m+':'+s;
   });
-  a.addEventListener('ended',()=>{ document.getElementById('pBtn').textContent='▶'; });
+  a.addEventListener('ended', () => {
+    document.getElementById('pBtn').textContent = '▶';
+    stopMouthAnim();
+  });
 }
 
+// ── Audio API ──
+let _audioCtx = null, _mouthAnalyser = null, _mouthRaf = null;
+
+function startMouthAnim() {}
+function stopMouthAnim() {}
+
 window.toggleAudio = () => {
-  const a=document.getElementById('aEl'), b=document.getElementById('pBtn');
+  const a = document.getElementById('aEl'), b = document.getElementById('pBtn');
   if (!a) return;
-  a.paused ? (a.play(), b.textContent='⏸') : (a.pause(), b.textContent='▶');
+
+  if (a.paused) {
+    // Web Audio API csak user gesture után indítható
+    if (!a._wcDone) {
+      try {
+        if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        _mouthAnalyser = _audioCtx.createAnalyser();
+        _mouthAnalyser.fftSize = 512;
+        const srcNode = _audioCtx.createMediaElementSource(a);
+        srcNode.connect(_mouthAnalyser);
+        _mouthAnalyser.connect(_audioCtx.destination);
+        a._wcDone = true;
+      } catch(e) { console.warn('AudioContext:', e); }
+    }
+    if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+    a.play();
+    b.textContent = '⏸';
+    startMouthAnim();
+  } else {
+    a.pause();
+    b.textContent = '▶';
+    stopMouthAnim();
+  }
 };
 
 // ── ARCHIVE ──
