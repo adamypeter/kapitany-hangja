@@ -1481,7 +1481,6 @@ footer {
 <nav>
   <a href="#" class="active" data-section="leaderboard">🏆 Tabella</a>
   <a href="#" data-section="napi">📡 Napi Kérdés</a>
-  <a href="#" data-section="archivum">📂 Archívum</a>
   <a href="#" data-section="hajonaplo">📖 Hajónapló</a>
   <a href="#" data-section="szabalyok">📜 Szabályzat</a>
   <a href="https://open.spotify.com/playlist/2EQ6r8xEzsdtvUGc8vnGzx?si=2f49fa9e7d3a40a5" target="_blank" rel="noopener" style="color:#1DB954">🎵 Playlist</a>
@@ -1503,16 +1502,12 @@ footer {
     <div id="napi-wrap"><div class="loading-state">Üzenet dekódolása...</div></div>
   </section>
 
-  <!-- ARCHÍVUM -->
-  <section class="section" id="archivum">
-    <div class="sec-head"><h2>📂 Korábbi Parancsok</h2></div>
-    <div id="arch-wrap"><div class="loading-state">Archívum betöltése...</div></div>
-  </section>
-
   <!-- HAJÓNAPLÓ -->
   <section class="section" id="hajonaplo">
     <div class="sec-head"><h2>📖 Hajónapló</h2></div>
     <div id="hajonaplo-wrap"><div class="loading-state">Napló előkészítése...</div></div>
+    <div class="sec-head" style="margin-top:2rem"><h2>📂 Korábbi Parancsok</h2></div>
+    <div id="arch-wrap"><div class="loading-state">Archívum betöltése...</div></div>
   </section>
 
   <!-- SZABÁLYOK -->
@@ -2453,7 +2448,7 @@ window.replayHajonaploAnim = () => {
   const svg = document.getElementById('hnSvg');
   if (!rect || !svg) return;
   const fullWidth = svg.viewBox.baseVal.width;
-  const duration = 1800;
+  const duration = 4500;
   if (_hnAnimTimer) cancelAnimationFrame(_hnAnimTimer);
   rect.setAttribute('width', 0);
   let start = null;
