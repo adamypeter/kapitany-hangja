@@ -685,6 +685,104 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
   line-height: 1.5;
 }
 
+/* ═══ HAJÓNAPLÓ ═══ */
+.hn-chart-card, .hn-stat-card {
+  background: white;
+  border: 1px solid #e0d8c0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.hn-chart-card { padding: 1.25rem 1.25rem 1rem; margin-bottom: 1.25rem; }
+.hn-chart-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.hn-chart-head h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--wine);
+  font-size: 1.15rem;
+}
+.hn-replay-btn {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  background: var(--lake);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.hn-replay-btn:hover { background: var(--lake-d); }
+.hn-chart-wrap { width: 100%; overflow-x: auto; }
+.hn-svg { width: 100%; height: auto; display: block; min-width: 480px; }
+.hn-gridline { stroke: #eee; stroke-width: 1; }
+.hn-axis-label { font-family: 'Lato', sans-serif; font-size: 9px; fill: #999; }
+.hn-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hn-dot { transition: r 0.15s; }
+.hn-name-label {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+}
+.hn-score-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 9.5px;
+  fill: #999;
+}
+
+.hn-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+}
+.hn-stat-card { padding: 1rem 1.1rem; }
+.hn-stat-head {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.hn-stat-icon { font-size: 1.2rem; }
+.hn-stat-title {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lake-d);
+}
+.hn-stat-main {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--wine);
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+.hn-stat-sub {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.8rem;
+  color: #888;
+}
+.hn-stat-list {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  max-height: 130px;
+  overflow-y: auto;
+  margin-top: 0.35rem;
+}
+.hn-stat-list-item {
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed #e8e0cc;
+}
+.hn-stat-list-item:last-child { border-bottom: none; }
+.hn-stat-list-item .hn-li-day { color: #aaa; font-size: 0.72rem; }
+
 /* ═══ RULES ═══ */
 .rules-card {
   background: white;
@@ -1384,6 +1482,7 @@ footer {
   <a href="#" class="active" data-section="leaderboard">🏆 Tabella</a>
   <a href="#" data-section="napi">📡 Napi Kérdés</a>
   <a href="#" data-section="archivum">📂 Archívum</a>
+  <a href="#" data-section="hajonaplo">📖 Hajónapló</a>
   <a href="#" data-section="szabalyok">📜 Szabályzat</a>
   <a href="https://open.spotify.com/playlist/2EQ6r8xEzsdtvUGc8vnGzx?si=2f49fa9e7d3a40a5" target="_blank" rel="noopener" style="color:#1DB954">🎵 Playlist</a>
   <a href="#" data-section="packing">🎒 Packing List</a>
@@ -1408,6 +1507,12 @@ footer {
   <section class="section" id="archivum">
     <div class="sec-head"><h2>📂 Korábbi Parancsok</h2></div>
     <div id="arch-wrap"><div class="loading-state">Archívum betöltése...</div></div>
+  </section>
+
+  <!-- HAJÓNAPLÓ -->
+  <section class="section" id="hajonaplo">
+    <div class="sec-head"><h2>📖 Hajónapló</h2></div>
+    <div id="hajonaplo-wrap"><div class="loading-state">Napló előkészítése...</div></div>
   </section>
 
   <!-- SZABÁLYOK -->
@@ -1654,6 +1759,11 @@ function normalizeQDate(raw) {
   return s; // már "YYYY-MM-DD" vagy "YYYY-MM-DD-2" formátumú
 }
 
+// A Sheet "dupla" oszlopa "YES"/"FALSE" (nem "true"/"false") — ezt kell felismerni
+function isDoubleFlag(raw) {
+  return /^(true|yes|igen)$/i.test((raw||'').toString().trim());
+}
+
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   const headers = splitCSVLine(lines[0]);
@@ -1734,25 +1844,8 @@ async function loadLB() {
     } catch(e) { players = DEMO_SCORES; }
   } else { players = DEMO_SCORES; }
 
-  players.sort((a,b) => b.score - a.score);
-  const allZero = players.every(p => p.score === 0);
-  const minScore = players.length ? players[players.length-1].score : 0;
-
-  // Holtverseny kezelése: azonos pontszám → azonos helyezés
-  let rankDisplay = 1;
-  const ranks = players.map((p, i) => {
-    if (i > 0 && p.score === players[i-1].score) {
-      return null; // holtverseny — előző rangot kapja
-    }
-    const r = rankDisplay;
-    rankDisplay = i + 2;
-    return r;
-  });
-  // visszatöltés: null-ok kapják az előző értéket
-  let lastRank = 1;
-  const finalRanks = ranks.map(r => { if (r !== null) lastRank = r; return lastRank; });
-
-  // Büntetőfeles + streak számolás
+  // Büntetőfeles + streak számolás (a rendezés előtt, hogy a holtverseny-eldöntő
+  // büntetőfeles-adat már rendelkezésre álljon)
   let penaltyMap = {}, streakMap = {};
   players.forEach(p => { penaltyMap[p.name] = 0; streakMap[p.name] = 0; });
   try {
@@ -1790,6 +1883,22 @@ async function loadLB() {
       streakMap[p.name] = s;
     });
   } catch(e) {}
+
+  // Rendezés: pontszám szerint csökkenő, holtverseny esetén kevesebb büntetőfeles nyer
+  players.sort((a,b) => b.score - a.score || (penaltyMap[a.name]||0) - (penaltyMap[b.name]||0));
+  const allZero = players.every(p => p.score === 0);
+  const minScore = players.length ? players[players.length-1].score : 0;
+
+  // Holtverseny kezelése: azonos pontszám ÉS azonos büntetőfeles → azonos helyezés
+  const ranks = players.map((p, i) => {
+    if (i > 0 && p.score === players[i-1].score && (penaltyMap[p.name]||0) === (penaltyMap[players[i-1].name]||0)) {
+      return null; // holtverseny — előző rangot kapja
+    }
+    return i + 1;
+  });
+  // visszatöltés: null-ok kapják az előző értéket
+  let lastRank = 1;
+  const finalRanks = ranks.map(r => { if (r !== null) lastRank = r; return lastRank; });
 
   const isOver = gameOver(_allQuestions);
 
@@ -1829,7 +1938,7 @@ async function loadLB() {
         const penalties = penaltyMap[p.name] || 0;
         html += `<tr>
           <td class="rank-num">${rank}</td>
-          <td class="player-nm">${PLAYER_IMAGES[p.name]?`<img class="lb-avatar" src="${PLAYER_IMAGES[p.name]}" alt="">`:''}
+          <td class="player-nm">${PLAYER_IMAGES[p.name]?`<img class="lb-avatar" src="${PLAYER_IMAGES[p.name]}" alt="" onclick="openProfile('${p.name.replace(/'/g,"\\'")}')" style="cursor:pointer">`:''}
             <span class="player-link" onclick="openProfile('${p.name.replace(/'/g,"\\'")}')">${p.name}</span></td>
           <td class="score-val">${scoreStr(p)}</td>
           <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
@@ -1840,12 +1949,11 @@ async function loadLB() {
 
     // Szobalány kiemelés
     if (last) {
-      const lastPenalties = penaltyMap[last.name] || 0;
       html += `<div class="szobalany-final">
         <div class="szobalany-icon">🧹</div>
         <div class="szobalany-title">A hajó szobalánya</div>
         <div class="szobalany-name">${last.name}</div>
-        <div class="szobalany-detail">${scoreStr(last)} pont${lastPenalties > 0 ? ` · ${lastPenalties} büntetőfeles` : ''}</div>
+        <div class="szobalany-detail">Kellemes ágyazást kiscsaj!👧</div>
       </div>`;
     }
 
@@ -1866,7 +1974,7 @@ async function loadLB() {
       const streakHtml = streak > 0 ? `<span class="lb-streak">🔥${streak}</span> ` : '';
       html += `<tr class="${cls}">
         <td class="rank-num">${sym}</td>
-        <td class="player-nm">${PLAYER_IMAGES[p.name]?`<img class="lb-avatar" src="${PLAYER_IMAGES[p.name]}" alt="">`:''}
+        <td class="player-nm">${PLAYER_IMAGES[p.name]?`<img class="lb-avatar" src="${PLAYER_IMAGES[p.name]}" alt="" onclick="openProfile('${p.name.replace(/'/g,"\\'")}')" style="cursor:pointer">`:''}
           <span><span class="player-link" onclick="openProfile('${p.name.replace(/'/g,"\\'")}')">${p.name}</span>${isLast && !allZero?`<span class="szobalanya">⚠ ${gameOver()?'Szobalány':'Szobalány jelölt'}</span>`:''}</span></td>
         <td class="score-val">${streakHtml}${scoreStr}</td>
         <td class="penalty-cell">${penalties > 0 ? `<span class="penalty-val">${penalties}</span>` : '<span class="penalty-zero">—</span>'}</td>
@@ -1910,7 +2018,7 @@ async function loadDaily() {
   const demoMatch = DEMO_QUESTIONS.find(x => x.date === qDate);
   const audioFile = (demoMatch && demoMatch.audioFile) || q.audioFile||q['Hangfájl']||q['hangfajl']||'';
   const videoFile = (demoMatch && demoMatch.videoFile) || '';
-  const qData = { date: qDate, question: q.question||q['Kérdés']||q['kerdes']||'', correct_players: q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'', double: (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true', audioFile, videoFile };
+  const qData = { date: qDate, question: q.question||q['Kérdés']||q['kerdes']||'', correct_players: q.correct_players||q['Helyesen válaszolt']||q['helyesen_valaszolt']||'', double: isDoubleFlag(q.double||q['Dupla']||q['dupla']), audioFile, videoFile };
   const dayNum = qs.indexOf(q)+1;
   const rawDate = qData.date.replace(/-\d+$/, (m) => m === '-2' ? '' : m); // "2026-07-03-2" → "2026-07-03"
   const dateStr = new Date(rawDate+'T12:00:00').toLocaleDateString('hu-HU',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
@@ -2087,7 +2195,7 @@ async function loadArchive() {
     const feligen    = q.feligen_valaszolt||'';
     const rosszul    = q.rosszul_valaszolt||'';
     const nemValasz  = q.nem_valaszolt||'';
-    const dbl        = (q.double||q['Dupla']||q['dupla']||'').toString().toLowerCase()==='true';
+    const dbl        = isDoubleFlag(q.double||q['Dupla']||q['dupla']);
     const dayN  = qs.indexOf(q)+1;
     const ds    = date ? new Date(date+'T12:00:00').toLocaleDateString('hu-HU',{month:'long',day:'numeric',weekday:'short'}) : '?';
     return `<div class="arch-item" id="a${i}">
@@ -2113,6 +2221,251 @@ async function loadArchive() {
 }
 
 window.tog = id => document.getElementById(id).classList.toggle('open');
+
+// ── HAJÓNAPLÓ ──
+const HN_PALETTE = ['#1e8abf','#c0392b','#d4820a','#2e8b57','#8e44ad','#e91e8c','#16a085','#7f6000'];
+let _hnAnimTimer = null;
+
+async function loadHajonaplo() {
+  const el = document.getElementById('hajonaplo-wrap');
+
+  let players = [];
+  if (!CONFIG.USE_DEMO && CONFIG.SHEET_SCORES_URL) {
+    try {
+      const r = await fetch(CONFIG.SHEET_SCORES_URL);
+      const text = await r.text();
+      const lines = text.trim().split('\n');
+      const headerIdx = lines.findIndex(l => {
+        const first = l.split(',')[0].trim().replace(/^"|"$/g,'').toLowerCase();
+        return first === 'játékos' || first === 'jatekos';
+      });
+      const startIdx = headerIdx >= 0 ? headerIdx : 1;
+      const headers = splitCSVLine(lines[startIdx]);
+      const rows = lines.slice(startIdx+1).map(line => {
+        const vals = splitCSVLine(line);
+        const o = {};
+        headers.forEach((h,i) => o[h] = vals[i]||'');
+        return o;
+      });
+      players = rows.map(r => r['Játékos']||r['jatekos']||'')
+        .filter(n => n && n.length < 50 && !n.includes('ℹ') && !n.includes('pontos') && !n.includes('oszlop'));
+    } catch(e) { players = DEMO_SCORES.map(p => p.name); }
+  } else { players = DEMO_SCORES.map(p => p.name); }
+
+  let qs = CONFIG.USE_DEMO || !CONFIG.SHEET_QUESTIONS_URL ? DEMO_QUESTIONS : [];
+  if (!CONFIG.USE_DEMO && CONFIG.SHEET_QUESTIONS_URL) {
+    try { qs = parseCSV(await (await fetch(CONFIG.SHEET_QUESTIONS_URL)).text()); }
+    catch { qs = DEMO_QUESTIONS; }
+  }
+
+  const scored = qs.filter(q => {
+    const c = q.correct_players||q['helyesen_valaszolt']||'';
+    const h = q.feligen_valaszolt||'';
+    const r = q.rosszul_valaszolt||'';
+    const n = q.nem_valaszolt||'';
+    return c || h || r || n;
+  });
+
+  if (!scored.length || !players.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📖</div><p>Még nincs elég adat a naplóhoz — várj az első kiértékelt napra!</p></div>';
+    return;
+  }
+
+  const days = scored.map((q, idx) => {
+    const isDouble    = isDoubleFlag(q.dupla||q['dupla']||q.double);
+    const correctList = (q.correct_players||q['helyesen_valaszolt']||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const halfList    = (q.feligen_valaszolt||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const wrongList   = (q.rosszul_valaszolt||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const missList    = (q.nem_valaszolt||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const question    = q.question||q['kerdes']||'—';
+    const dayNum       = qs.indexOf(q)+1;
+    return { idx, isDouble, correctList, halfList, wrongList, missList, question, dayNum };
+  });
+
+  // ── kumulatív pontszám + streak-ek + statisztikák naponta ──
+  const cumulative = {}, totalHalf = {}, totalMiss = {};
+  const streakInfo = {}, negStreakInfo = {};
+  players.forEach(p => {
+    cumulative[p] = [];
+    totalHalf[p] = 0; totalMiss[p] = 0;
+    streakInfo[p] = { cur: 0, max: 0 };
+    negStreakInfo[p] = { cur: 0, max: 0 };
+  });
+
+  const noOneQs = [], everyoneQs = [];
+
+  days.forEach(d => {
+    const cLow = d.correctList.map(x=>x.toLowerCase());
+    const hLow = d.halfList.map(x=>x.toLowerCase());
+    const wLow = d.wrongList.map(x=>x.toLowerCase());
+    const mLow = d.missList.map(x=>x.toLowerCase());
+
+    if (d.correctList.length===0 && d.halfList.length===0) noOneQs.push(d);
+    if (d.wrongList.length===0 && d.missList.length===0 && (d.correctList.length+d.halfList.length) >= players.length) everyoneQs.push(d);
+
+    players.forEach(p => {
+      const pl = p.toLowerCase();
+      const isOk    = cLow.includes(pl);
+      const isHalf  = !isOk && hLow.includes(pl);
+      const isWrong = !isOk && !isHalf && wLow.includes(pl);
+      const isMiss  = mLow.includes(pl);
+      const pts = isOk ? (d.isDouble?2:1) : isHalf ? (d.isDouble?1:0.5) : 0;
+      const prev = cumulative[p].length ? cumulative[p][cumulative[p].length-1] : 0;
+      cumulative[p].push(prev + pts);
+
+      if (isHalf) totalHalf[p]++;
+      if (isWrong || isMiss) totalMiss[p]++;
+
+      if (isOk || isHalf) {
+        streakInfo[p].cur++;
+        streakInfo[p].max = Math.max(streakInfo[p].max, streakInfo[p].cur);
+        negStreakInfo[p].cur = 0;
+      } else if (isWrong || isMiss) {
+        negStreakInfo[p].cur++;
+        negStreakInfo[p].max = Math.max(negStreakInfo[p].max, negStreakInfo[p].cur);
+        streakInfo[p].cur = 0;
+      } else {
+        streakInfo[p].cur = 0;
+        negStreakInfo[p].cur = 0;
+      }
+    });
+  });
+
+  // ── napi helyezések (bump chart adat) ──
+  const ranksByPlayer = {}; players.forEach(p => ranksByPlayer[p] = []);
+  days.forEach((d, dayIdx) => {
+    const standing = players.map(p => ({ p, score: cumulative[p][dayIdx] }));
+    standing.sort((a,b) => b.score - a.score || a.p.localeCompare(b.p));
+    standing.forEach((s, rankIdx) => ranksByPlayer[s.p].push(rankIdx + 1));
+  });
+
+  const colorOf = {}; players.forEach((p,i) => colorOf[p] = HN_PALETTE[i % HN_PALETTE.length]);
+
+  // ── SVG bump chart felépítése ──
+  const dayCount   = days.length;
+  const marginL = 28, marginR = 132, marginT = 16, marginB = 24;
+  const plotW = Math.max(dayCount * 26, 360);
+  const rowH  = 30;
+  const plotH = (players.length - 1) * rowH;
+  const svgW = marginL + plotW + marginR;
+  const svgH = marginT + plotH + marginB;
+
+  const xFor = i => dayCount > 1 ? marginL + (i/(dayCount-1)) * plotW : marginL + plotW/2;
+  const yFor = rank => marginT + (rank-1) * rowH;
+
+  let gridSvg = '';
+  for (let rk = 1; rk <= players.length; rk++) {
+    gridSvg += `<line class="hn-gridline" x1="${marginL}" y1="${yFor(rk)}" x2="${marginL+plotW}" y2="${yFor(rk)}"/>`;
+  }
+  // x tengely: napszámok (max 8 felirat, egyenletesen elosztva)
+  const tickCount = Math.min(dayCount, 8);
+  let axisSvg = '';
+  for (let t = 0; t < tickCount; t++) {
+    const dIdx = Math.round(t * (dayCount-1) / Math.max(tickCount-1,1));
+    axisSvg += `<text class="hn-axis-label" x="${xFor(dIdx)}" y="${svgH-6}" text-anchor="middle">${days[dIdx].dayNum}.</text>`;
+  }
+
+  let linesSvg = '', dotsSvg = '', labelsSvg = '';
+  players.forEach(p => {
+    const ranks = ranksByPlayer[p];
+    const pts = ranks.map((rk,i) => `${xFor(i)},${yFor(rk)}`).join(' ');
+    const color = colorOf[p];
+    linesSvg += `<polyline class="hn-line" points="${pts}" stroke="${color}"/>`;
+    ranks.forEach((rk,i) => {
+      dotsSvg += `<circle class="hn-dot" cx="${xFor(i)}" cy="${yFor(rk)}" r="3" fill="${color}"/>`;
+    });
+    const lastRank = ranks[ranks.length-1];
+    const finalScore = cumulative[p][cumulative[p].length-1];
+    const scoreStr = Number.isInteger(finalScore) ? finalScore : finalScore.toString().replace('.',',');
+    labelsSvg += `<g class="player-link" onclick="openProfile('${p.replace(/'/g,"\\'")}')" style="cursor:pointer">
+      <text class="hn-name-label" x="${marginL+plotW+10}" y="${yFor(lastRank)+4}" fill="${color}">${p}</text>
+      <text class="hn-score-label" x="${marginL+plotW+10}" y="${yFor(lastRank)+16}">${scoreStr} pont</text>
+    </g>`;
+  });
+
+  const chartHtml = `
+  <div class="hn-chart-card">
+    <div class="hn-chart-head">
+      <h3>🏁 Helyezés-történet</h3>
+      <button class="hn-replay-btn" onclick="replayHajonaploAnim()">🔁 Lejátszás</button>
+    </div>
+    <div class="hn-chart-wrap">
+      <svg class="hn-svg" id="hnSvg" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg">
+        <defs><clipPath id="hnClip"><rect id="hnClipRect" x="0" y="0" width="0" height="${svgH}"/></clipPath></defs>
+        ${gridSvg}
+        ${axisSvg}
+        <g clip-path="url(#hnClip)">${linesSvg}${dotsSvg}</g>
+        <g clip-path="url(#hnClip)">${labelsSvg}</g>
+      </svg>
+    </div>
+  </div>`;
+
+  // ── statisztikai kártyák ──
+  const bestStreak = players.map(p => ({ p, v: streakInfo[p].max })).sort((a,b)=>b.v-a.v)[0];
+  const worstStreak = players.map(p => ({ p, v: negStreakInfo[p].max })).sort((a,b)=>b.v-a.v)[0];
+  const mostMiss = players.map(p => ({ p, v: totalMiss[p] })).sort((a,b)=>b.v-a.v)[0];
+  const mostHalf = players.map(p => ({ p, v: totalHalf[p] })).sort((a,b)=>b.v-a.v)[0];
+
+  const qListHtml = (list) => list.length
+    ? `<div class="hn-stat-list">${list.map(d => `<div class="hn-stat-list-item"><span class="hn-li-day">${d.dayNum}. nap</span> — ${d.question}</div>`).join('')}</div>`
+    : `<div class="hn-stat-sub">Nincs ilyen még</div>`;
+
+  const statsHtml = `
+  <div class="hn-stats-grid">
+    <div class="hn-stat-card">
+      <div class="hn-stat-head"><span class="hn-stat-icon">🔥</span><span class="hn-stat-title">Leghosszabb sorozat</span></div>
+      <div class="hn-stat-main">${bestStreak.p}</div>
+      <div class="hn-stat-sub">${bestStreak.v} egymást követő helyes/félig helyes válasz</div>
+    </div>
+    <div class="hn-stat-card">
+      <div class="hn-stat-head"><span class="hn-stat-icon">🌊</span><span class="hn-stat-title">Leghosszabb negatív sorozat</span></div>
+      <div class="hn-stat-main">${worstStreak.p}</div>
+      <div class="hn-stat-sub">${worstStreak.v} egymást követő rossz/hiányzó válasz</div>
+    </div>
+    <div class="hn-stat-card">
+      <div class="hn-stat-head"><span class="hn-stat-icon">🤷</span><span class="hn-stat-title">Amire senki nem tudta a választ</span></div>
+      <div class="hn-stat-main">${noOneQs.length} parancs</div>
+      ${qListHtml(noOneQs)}
+    </div>
+    <div class="hn-stat-card">
+      <div class="hn-stat-head"><span class="hn-stat-icon">🏆</span><span class="hn-stat-title">Amire mindenki tudta a választ</span></div>
+      <div class="hn-stat-main">${everyoneQs.length} parancs</div>
+      ${qListHtml(everyoneQs)}
+    </div>
+    <div class="hn-stat-card">
+      <div class="hn-stat-head"><span class="hn-stat-icon">💥</span><span class="hn-stat-title">Legtöbb elrontott kérdés</span></div>
+      <div class="hn-stat-main">${mostMiss.p}</div>
+      <div class="hn-stat-sub">${mostMiss.v} alkalommal nem tudta a választ</div>
+    </div>
+    <div class="hn-stat-card">
+      <div class="hn-stat-head"><span class="hn-stat-icon">➗</span><span class="hn-stat-title">Legtöbb fél pontot szerző matróz</span></div>
+      <div class="hn-stat-main">${mostHalf.p}</div>
+      <div class="hn-stat-sub">${mostHalf.v} félig helyes válasz</div>
+    </div>
+  </div>`;
+
+  el.innerHTML = chartHtml + statsHtml;
+  replayHajonaploAnim();
+}
+
+window.replayHajonaploAnim = () => {
+  const rect = document.getElementById('hnClipRect');
+  const svg = document.getElementById('hnSvg');
+  if (!rect || !svg) return;
+  const fullWidth = svg.viewBox.baseVal.width;
+  const duration = 1800;
+  if (_hnAnimTimer) cancelAnimationFrame(_hnAnimTimer);
+  rect.setAttribute('width', 0);
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / duration, 1);
+    const eased = 1 - Math.pow(1-p, 3); // ease-out
+    rect.setAttribute('width', fullWidth * eased);
+    if (p < 1) _hnAnimTimer = requestAnimationFrame(step);
+  }
+  _hnAnimTimer = requestAnimationFrame(step);
+};
 
 // ── PROFIL ──
 let _allPlayers = [];  // feltöltve a loadLB végén
@@ -2166,7 +2519,7 @@ window.openProfile = (playerName) => {
     const rawHalf    = q.feligen_valaszolt||'';
     const rawWrong   = q.rosszul_valaszolt||'';
     const rawMiss    = q.nem_valaszolt||'';
-    const dbl        = (q.dupla||q['dupla']||'').toString().toLowerCase()==='true';
+    const dbl        = isDoubleFlag(q.dupla||q['dupla']);
 
     const correctList = rawCorrect.split(',').map(n => n.trim()).filter(Boolean);
     const halfList    = rawHalf.split(',').map(n => n.trim()).filter(Boolean);
@@ -2442,7 +2795,7 @@ updateCountdown();
 setInterval(updateCountdown, 60000);
 
 // ── INIT ──
-loadLB(); loadDaily(); loadArchive();
+loadLB(); loadDaily(); loadArchive(); loadHajonaplo();
 </script>
 </body>
 </html>
