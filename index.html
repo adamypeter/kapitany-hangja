@@ -1671,7 +1671,20 @@ function effectiveToday() {
   return todayStr();
 }
 
-function gameOver() { return getNow() >= GAME_END; }
+// Manuális lezárás: ha a 30. (záró) kérdés sora ki van értékelve a Sheetben
+// (bármelyik válasz-oszlopba került adat), a játék azonnal lezártnak számít —
+// nem kell megvárni a 10:00-t. Ez telefonról is kényelmesen vezérelhető.
+function isFinalQuestionScored(qs) {
+  const finalQ = (qs||[]).find(q => (q.date||q['datum']||'') === '2026-07-03-2');
+  if (!finalQ) return false;
+  const c = finalQ.correct_players||finalQ['helyesen_valaszolt']||'';
+  const h = finalQ.feligen_valaszolt||'';
+  const r = finalQ.rosszul_valaszolt||'';
+  const n = finalQ.nem_valaszolt||'';
+  return !!(c || h || r || n);
+}
+
+function gameOver(qs) { return getNow() >= GAME_END || isFinalQuestionScored(qs || _allQuestions); }
 
 // ── LEADERBOARD ──
 async function loadLB() {
@@ -1756,7 +1769,7 @@ async function loadLB() {
     });
   } catch(e) {}
 
-  const isOver = gameOver();
+  const isOver = gameOver(_allQuestions);
 
   if (isOver) {
     // ── VÉGEREDMÉNY NÉZET ──
@@ -1853,14 +1866,19 @@ async function loadDaily() {
     catch { qs = DEMO_QUESTIONS; }
   }
 
+  const el = document.getElementById('napi-wrap');
+
+  if (gameOver(qs)) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A kvízjáték lezárult.<br>Köszönjük a részvételt, fel a fedélzetre!</p></div>`;
+    return;
+  }
+
   const today = effectiveToday();
   const q = qs.find(x => (x.date||x['Dátum']||x['datum']||'')=== today);
-  const el = document.getElementById('napi-wrap');
 
   if (!q) {
     const d = new Date(today), s = new Date('2026-06-05');
-    if (gameOver()) el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏁</div><p>A kvízjáték lezárult — 2026. július 3-án 10:00-kor.<br>Köszönjük a részvételt, fel a fedélzetre!</p></div>`;
-    else if (d < s) el.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><p>A verseny <strong>2026. június 5-én</strong> indul.<br>Addig: készülj, igyál kisfröccsöt, nézd a Badacsonyt.</p></div>`;
+    if (d < s) el.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><p>A verseny <strong>2026. június 5-én</strong> indul.<br>Addig: készülj, igyál kisfröccsöt, nézd a Badacsonyt.</p></div>`;
     else el.innerHTML = `<div class="empty-state"><div class="empty-icon">📡</div><p>Ma még nem érkezett parancs.<br>A kvízmester hamarosan küldi a napi kérdést a Messengerbe.</p></div>`;
     return;
   }
