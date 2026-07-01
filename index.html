@@ -1639,6 +1639,21 @@ function parseHUFloat(s) {
   return parseFloat((s||'0').replace(',', '.')) || 0;
 }
 
+// A Sheetben a július 3-i két záró kérdésnél előfordulhat "2026.07.03. 9:00:00"
+// jellegű dátum+idő formátum (a szokásos "2026-06-05" helyett), mert ezen a napon
+// két kérdés is fut. Ezt kell "2026-07-03" / "2026-07-03-2" kulcsra alakítani.
+function normalizeQDate(raw) {
+  const s = (raw||'').toString().trim();
+  if (!s) return '';
+  const m = s.match(/^(\d{4})\.(\d{2})\.(\d{2})\.\s*(\d{1,2}):(\d{2})/);
+  if (m) {
+    const [, y, mo, d, h] = m;
+    const base = `${y}-${mo}-${d}`;
+    return parseInt(h, 10) >= 10 ? `${base}-2` : base;
+  }
+  return s; // már "YYYY-MM-DD" vagy "YYYY-MM-DD-2" formátumú
+}
+
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   const headers = splitCSVLine(lines[0]);
@@ -1646,6 +1661,8 @@ function parseCSV(text) {
     const vals = splitCSVLine(line);
     const o = {};
     headers.forEach((h,i) => o[h] = vals[i]||'');
+    if ('datum' in o) o.datum = normalizeQDate(o.datum);
+    if ('date' in o)  o.date  = normalizeQDate(o.date);
     return o;
   });
 }
@@ -1675,7 +1692,12 @@ function effectiveToday() {
 // (bármelyik válasz-oszlopba került adat), a játék azonnal lezártnak számít —
 // nem kell megvárni a 10:00-t. Ez telefonról is kényelmesen vezérelhető.
 function isFinalQuestionScored(qs) {
-  const finalQ = (qs||[]).find(q => (q.date||q['datum']||'') === '2026-07-03-2');
+  const list = qs || [];
+  // elsődlegesen a "#" oszlop (kérdés-sorszám) alapján — ez a legmegbízhatóbb,
+  // független a dátumoszlop formátumától; demo-adatnál dátum-egyezésre esik vissza
+  const finalQ = list.find(q => (q['#']||'').toString().trim() === '30')
+              || list.find(q => (q.date||q['datum']||'') === '2026-07-03-2')
+              || (list.length ? list[list.length - 1] : null);
   if (!finalQ) return false;
   const c = finalQ.correct_players||finalQ['helyesen_valaszolt']||'';
   const h = finalQ.feligen_valaszolt||'';
